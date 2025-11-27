@@ -1,0 +1,31 @@
+# --- BACKEND ---
+# Bỏ qua file biên dịch Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Bỏ qua môi trường ảo (Virtual Environment)
+venv/
+env/
+.venv/
+.fvenv/
+
+# Bỏ qua file biến môi trường 
+.env
+.env.local
+
+# --- FRONTEND ---
+# Bỏ qua thư mục thư viện 
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Bỏ qua thư mục build (khi build ra production)
+build/
+dist/
+
+# --- CÁC FILE HỆ THỐNG CHUNG ---
+.DS_Store
+.vscode/
+.idea/
