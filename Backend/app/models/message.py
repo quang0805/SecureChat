@@ -12,5 +12,5 @@ class Message(Base):
     content_type = Column(String(20), default="text")
     content = Column(Text, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
-        # Relationship to User
+    # Relationship to User
     sender = relationship("User", back_populates="messages_sent")

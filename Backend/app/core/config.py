@@ -1,7 +1,7 @@
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "FastAPI Chat Backend"
+    PROJECT_NAME: str = "SecureChat Application"
     API_V1_STR: str = "/api/v1"
     DATABASE_URL: str = ""
     SECRET_KEY: str = ""

@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Any
 from jose import JWTError, jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Path, Query
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from pwdlib import PasswordHash
@@ -13,6 +13,7 @@ from app.core.database import get_db
 password_hash = PasswordHash.recommended()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
 
+# Sử dụng thuật toán Argon2 để hash mật khẩu
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return password_hash.verify(plain_password, hashed_password)
 
@@ -45,6 +46,28 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
     except JWTError:
         raise credentials_exception
     user = user_service.get_user_by_username(db, username= token_data.username)
+    if user is None:
+        raise credentials_exception
+    return user
+
+async def get_current_user_from_token(
+    token: str = Path(...), # Token từ URL path
+    db: Session = Depends(get_db)
+):
+    from app.services import user_service
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+    )
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
+    except JWTError:
+        raise credentials_exception
+    user = user_service.get_user_by_username(db, username=token_data.username)
     if user is None:
         raise credentials_exception
     return user

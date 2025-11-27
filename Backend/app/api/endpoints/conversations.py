@@ -64,7 +64,7 @@ def get_conversation_messages(
     return messages
 
 @router.post("/{conversation_id}/messages", response_model=message_schema.Message, status_code=status.HTTP_201_CREATED)
-def send_new_message(
+async def send_new_message(
     conversation_id: uuid.UUID,
     message_in: message_schema.MessageCreate,
     db: Session = Depends(get_db),
@@ -78,7 +78,7 @@ def send_new_message(
     if not conversation:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found or you don't have access")
 
-    message = message_service.create_message(
+    message = await  message_service.create_message(
         db, message_data=message_in, conversation_id=conversation_id, sender_id=current_user.id
     )
     message.sender = current_user
