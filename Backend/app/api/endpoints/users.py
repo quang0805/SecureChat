@@ -8,12 +8,12 @@ from app.models import User
 
 router = APIRouter()
 
-@router.post("/", response_model=user_schema.User, status_code=status.HTTP_201_CREATED)
-def create_new_user(user: user_schema.UserCreate, db: Session = Depends(get_db)):
-    db_user = user_service.get_user_by_username(db, username=user.username)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Username already registered")
-    return user_service.create_user(db=db, user=user)
+# @router.post("/", response_model=user_schema.User, status_code=status.HTTP_201_CREATED)
+# def create_new_user(user: user_schema.UserCreate, db: Session = Depends(get_db)):
+#     db_user = user_service.get_user_by_username(db, username=user.username)
+#     if db_user:
+#         raise HTTPException(status_code=400, detail="Username already registered")
+#     return user_service.create_user(db=db, user=user)
 
 @router.get("/me", response_model=user_schema.User)
 def read_users_me(current_user: User = Depends(get_current_user)):
