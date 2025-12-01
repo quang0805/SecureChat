@@ -11,8 +11,11 @@ from app.schemas import user as user_schema
 
 router = APIRouter()
 
-@router.post("/login", response_model=Token)
-def login(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
+@router.post("/signin", response_model=Token)
+def signIn(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
+    """
+    SignIn
+    """
     user = user_service.get_user_by_username(db, username=form_data.username)
     if not user or not security.verify_password(form_data.password, user.password):
         raise HTTPException(
@@ -27,9 +30,13 @@ def login(db: Session = Depends(get_db), form_data: OAuth2PasswordRequestForm = 
 
 
 @router.post("/signup", response_model = user_schema.User, status_code = status.HTTP_201_CREATED)
-def signup(user: user_schema.UserCreate,db: Session = Depends(get_db)):
+def signUp(user: user_schema.UserCreate,db: Session = Depends(get_db)):
+    """
+    Sign Up
+    """
     db_user = user_service.get_user_by_username(db, username= user.username)
     if db_user:
         raise HTTPException(status_code = 400, detail="Username already registered")
     
-    return user_service.create_user(db =db , user=user)
+    user_created =  user_service.create_user(db =db , user=user)
+    return user_created
