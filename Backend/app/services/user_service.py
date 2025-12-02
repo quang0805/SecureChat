@@ -17,3 +17,8 @@ def create_user(db: Session, user: UserCreate):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+# Muc dich cho test.py
+def get_all_user(db: Session):
+    list_users = db.query(User).all()
+    return list_users

@@ -6,6 +6,8 @@ import { Label } from "@radix-ui/react-label"
 import { z } from 'zod';
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate } from "react-router"
+import { useAuthStore } from "@/stores/useAuthStore"
 
 
 const signInSchema = z.object({
@@ -25,10 +27,17 @@ export function SignInForm({
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<SignInFormValues>({
         resolver: zodResolver(signInSchema)
     });
+    const signIn = useAuthStore((state) => state.signIn)
+    const navigate = useNavigate()
 
     const onSubmit = async (data: SignInFormValues) => {
-        // CALL API
-        console.log(data)
+        const { username, password } = data
+        try {
+            await signIn(username, password)
+            navigate("/")
+        } catch (error) {
+            // console.log(error.response.data.detail)
+        }
     }
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>

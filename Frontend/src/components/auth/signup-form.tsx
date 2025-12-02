@@ -6,6 +6,8 @@ import { Label } from "@radix-ui/react-label"
 import { z } from 'zod';
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useAuthStore } from "@/stores/useAuthStore"
+import { useNavigate } from "react-router"
 
 
 const signUpSchema = z.object({
@@ -16,7 +18,7 @@ const signUpSchema = z.object({
 
 });
 
-type SingUpFormValues = z.infer<typeof signUpSchema>
+type SignUpFormValues = z.infer<typeof signUpSchema>
 
 
 export function SignupForm({
@@ -24,13 +26,21 @@ export function SignupForm({
   ...props
 }: React.ComponentProps<"div">) {
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<SingUpFormValues>({
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema)
   });
+  const signUp = useAuthStore((state) => state.signUp)
+  const navigate = useNavigate()
 
-  const onSubmit = async (data: SingUpFormValues) => {
-    // CALL API
-    console.log(data)
+  const onSubmit = async (data: SignUpFormValues) => {
+    const { firstname, lastname, username, password } = data
+    try {
+      await signUp(username, password, firstname, lastname)
+      navigate("/signin")
+      console.log('SignUpFormValues' + data)
+    } catch (error) {
+      console.error(error)
+    }
   }
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>

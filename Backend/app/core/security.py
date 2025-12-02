@@ -11,7 +11,7 @@ from app.schemas.token import TokenData
 from app.core.database import get_db
 
 password_hash = PasswordHash.recommended()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/signin")
 
 # Sử dụng thuật toán Argon2 để hash mật khẩu
 def verify_password(plain_password: str, hashed_password: str) -> bool:

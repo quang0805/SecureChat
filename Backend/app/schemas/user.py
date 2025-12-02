@@ -2,6 +2,7 @@
 import uuid
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
+from datetime import datetime
 
 class UserBase(BaseModel):
     username: str
@@ -14,3 +15,5 @@ class UserCreate(UserBase):
 class User(UserBase):
     id: uuid.UUID
     model_config = ConfigDict(from_attributes=True)
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
