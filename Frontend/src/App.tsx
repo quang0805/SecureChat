@@ -4,7 +4,15 @@ import SignUpPage from "./pages/SignUpPage"
 import ChatAppPage from "./pages/ChatAppPage"
 import { Toaster } from "sonner"
 import ProtectedRoute from "./components/auth/ProtectedRoute"
+import { useThemeStore } from "./stores/useThemeStore"
+import { useEffect } from "react"
 function App() {
+  const isDark = useThemeStore((s) => s.isDark)
+  const setTheme = useThemeStore((s) => s.setTheme)
+
+  useEffect(() => {
+    setTheme(isDark)
+  }, [isDark])
 
   return (
     <>
@@ -26,14 +34,14 @@ function App() {
 
 
           {/**Protected route */}
-          <Route
+          {/* <Route
             element={<ProtectedRoute />}
-          >
-            <Route
-              path="/"
-              element={<ChatAppPage />}
-            />
-          </Route>
+          > */}
+          <Route
+            path="/"
+            element={<ChatAppPage />}
+          />
+          {/* </Route> */}
         </Routes>
       </BrowserRouter>
     </>
