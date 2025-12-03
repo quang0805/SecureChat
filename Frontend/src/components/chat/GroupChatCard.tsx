@@ -31,6 +31,7 @@ const GroupChatCard = ({ convo }: { convo: Conversation }) => {
                 <>
                     {/* todo: user avatar */}
                     {/* todo: status badge */}
+
                     {/* todo: unread count */}
                 </>
             }

@@ -2,6 +2,7 @@ import { Button } from '../ui/button'
 import { useNavigate } from 'react-router'
 import { useAuthStore } from '@/stores/useAuthStore'
 import { toast } from 'sonner'
+import { LogOut, LogOutIcon, LucideLogOut } from 'lucide-react'
 
 const Logout = () => {
     const navigate = useNavigate()
@@ -13,12 +14,13 @@ const Logout = () => {
     }
 
     return (
-        <div className='flex justify-center items-center h-screen'>
-            <Button
-                onClick={handleLogout}
-
-            >LOGOUT</Button>
-        </div>
+        <Button
+            variant="completeGhost"
+            onClick={handleLogout}
+        >
+            <LucideLogOut className='text-destructive' />
+            Log out
+        </Button>
     )
 }
 

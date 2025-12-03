@@ -2,6 +2,8 @@ import type { Conversation } from '@/types/chat'
 import ChatCard from './ChatCard';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useChatStore } from '@/stores/useChatStore';
+import UserAvatar from './UserAvatar';
+import StatusBadge from './StatusBadge';
 
 const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
     const user = useAuthStore((s) => s.user)
@@ -32,9 +34,13 @@ const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
             onSelect={handleSelectConversation}
             leftSection={
                 <>
-                    {/* todo: user avatar */}
-                    {/* todo: status badge */}
-                    {/* todo: unread count */}
+                    <UserAvatar
+                        type='sidebar'
+                        name={otherUser.display_name ?? ""}
+                        avatarUrl={otherUser.avatar_url ?? undefined}
+                    />
+                    {/* Todo: Websocket */}
+                    <StatusBadge status='offline' />
                 </>
             }
             subtitle={

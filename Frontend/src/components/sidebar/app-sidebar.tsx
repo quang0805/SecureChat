@@ -20,10 +20,13 @@ import GroupChatList from "../chat/GroupChatList"
 import AddFriendModal from "../chat/AddFriendModal"
 import DirectMessageList from "../chat/DirectMessageList"
 import { useThemeStore } from "@/stores/useThemeStore"
+import { NavUser } from "./nav-user"
+import { useAuthStore } from "@/stores/useAuthStore"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const isDark = useThemeStore((s) => s.isDark)
   const toggleTheme = useThemeStore((s) => s.toggleTheme)
+  const user = useAuthStore((s) => s.user)
   return (
     <Sidebar variant="inset" {...props}>
       {/* Header */}
@@ -93,7 +96,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       {/* Footer */}
       <SidebarFooter>
-        {/* <NavUser user={data.user} /> */}
+        {user && <NavUser user={user} />}
       </SidebarFooter>
     </Sidebar>
   )
