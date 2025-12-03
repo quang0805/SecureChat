@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import get_current_user
-from app.models import User
+from app.models import User, Participant, Message
 from app.schemas import conversation as conversation_schema, message as message_schema
 from app.services import conversation_service, message_service, user_service
 
@@ -42,6 +42,11 @@ def get_my_conversations(
     for conv in conversations:
         participant_ids = [p.user_id for p in db.query(Participant.user_id).filter(Participant.conversation_id == conv.id).all()]
         conv.participants = db.query(User).filter(User.id.in_(participant_ids)).all()
+        last_msg = db.query(Message).filter(
+            Message.conversation_id == conv.id
+        ).order_by(Message.created_at.desc()).first()
+        conv.last_message = last_msg
+
     return conversations
 
 @router.get("/{conversation_id}/messages", response_model=List[message_schema.Message])
@@ -58,6 +63,7 @@ def get_conversation_messages(
     messages = message_service.get_messages_by_conversation(
         db, conversation_id=conversation_id, user_id=current_user.id, skip=skip, limit=limit
     )
+
     # Populate sender information for each message
     for msg in messages:
         msg.sender = user_service.get_user(db, user_id=msg.sender_id)

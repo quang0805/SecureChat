@@ -9,6 +9,7 @@ class MessageBase(BaseModel):
     content_type: str = "text"
 
 class MessageCreate(MessageBase):
+    model_config = ConfigDict(from_attributes=True)
     pass
 
 class Message(MessageBase):

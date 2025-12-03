@@ -1,6 +1,6 @@
 # app/services/message_service.py
 import uuid
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session,joinedload
 from fastapi import HTTPException, status
 from app.models import Message, Participant
 from app.schemas.message import MessageCreate
@@ -48,8 +48,14 @@ async def create_message(db: Session, message_data: MessageCreate, conversation_
     await manager.broadcast(broadcast_data, participant_ids)
     return db_message
 
-def get_messages_by_conversation(db: Session, conversation_id: uuid.UUID, user_id: uuid.UUID, skip: int = 0, limit: int = 50):
-    # Kiểm tra xem người dùng có quyền xem tin nhắn không
+
+def get_messages_by_conversation(
+    db: Session, 
+    conversation_id: uuid.UUID, 
+    user_id: uuid.UUID, 
+    skip: int = 0, 
+    limit: int = 50
+):
     is_participant = db.query(Participant).filter(
         Participant.conversation_id == conversation_id,
         Participant.user_id == user_id
@@ -61,7 +67,12 @@ def get_messages_by_conversation(db: Session, conversation_id: uuid.UUID, user_i
             detail="You are not a member of this conversation"
         )
     
-    messages = db.query(Message).filter(Message.conversation_id == conversation_id).order_by(Message.created_at.desc()).offset(skip).limit(limit).all()
-    
-    # Đảo ngược lại để tin nhắn cũ nhất ở đầu
+    messages = db.query(Message)\
+        .options(joinedload(Message.sender))\
+        .filter(Message.conversation_id == conversation_id)\
+        .order_by(Message.created_at.desc())\
+        .offset(skip)\
+        .limit(limit)\
+        .all()
+    # Đảo ngược danh sách tin nhắn, để tin nhẵn cũ ở đầu.     
     return messages[::-1]
