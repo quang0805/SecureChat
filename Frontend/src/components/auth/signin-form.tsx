@@ -36,7 +36,7 @@ export function SignInForm({
             await signIn(username, password)
             navigate("/")
         } catch (error) {
-            // console.log(error.response.data.detail)
+            // console.error(error.response.data.detail)
         }
     }
     return (

@@ -1,8 +1,9 @@
 import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
 import { toast } from "sonner"
-import { authService } from "@/services/services"
+import { authService } from "@/services/authService"
 import type { AuthState } from "@/types/store"
+import { useChatStore } from "./useChatStore"
 
 export const useAuthStore = create<AuthState>()(
     persist(
@@ -14,6 +15,7 @@ export const useAuthStore = create<AuthState>()(
             clearState: () => {
                 set({ accessToken: null, user: null, loading: false })
                 localStorage.clear()
+                useChatStore.getState().reset()
             },
 
             signUp: async (username, password, firstName, lastName) => {
@@ -36,13 +38,14 @@ export const useAuthStore = create<AuthState>()(
                 try {
                     set({ loading: true })
                     localStorage.clear()
+                    useChatStore.getState().reset()
                     const { access_token } = await authService.signIn(username, password)
 
                     // Lưu token vào state
                     set({ accessToken: access_token })
-                    console.log(access_token)
-
                     await get().fetchMe()
+                    useChatStore.getState().fetchConversation()
+
                     toast.success("Đăng nhập thành công!")
                 } catch (error) {
                     console.error(error)
