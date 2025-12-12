@@ -5,16 +5,17 @@ import ChatCard from "./ChatCard"
 
 const GroupChatCard = ({ convo }: { convo: Conversation }) => {
     const user = useAuthStore((s) => s.user)
-    const { activeConversationId, setActiveConversation, messages } = useChatStore()
+    const { activeConversationId, setActiveConversationId, messages, fetchMessages } = useChatStore()
 
     if (!user) return null;
     const otherUsers = convo.participants.find((p) => p.id !== user.id)
     if (!otherUsers) return null;
     const lastMessage = convo.last_message?.content ?? "";
     const handleSelectConversation = async (id: string) => {
-        setActiveConversation(id)
+        setActiveConversationId(id)
         if (!messages[id]) {
-            //TODO: CALL API
+            setActiveConversationId(id);
+            fetchMessages(id);
         }
     }
 

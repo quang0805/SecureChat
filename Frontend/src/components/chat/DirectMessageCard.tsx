@@ -4,25 +4,21 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { useChatStore } from '@/stores/useChatStore';
 import UserAvatar from './UserAvatar';
 import StatusBadge from './StatusBadge';
+import { useEffect } from 'react';
 
 const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
     const user = useAuthStore((s) => s.user)
-    const { activeConversationId, setActiveConversation, messages } = useChatStore()
+    const { activeConversationId, setActiveConversationId, fetchMessages } = useChatStore()
 
     if (!user) return null;
     const otherUser = convo.participants.find((p) => p.id !== user.id)
     if (!otherUser) return null;
 
-    // const unreadCount = convo.unreadCounts[user.id]
     const lastMessage = convo.last_message?.content ?? "";
     const handleSelectConversation = async (id: string) => {
-        setActiveConversation(id);
-        if (!messages[id]) {
-            // TODO: CALL API
-        }
+        setActiveConversationId(id);
+        fetchMessages(id);
     }
-
-
     return (
         <ChatCard
             convoId={convo.id}
@@ -31,7 +27,7 @@ const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
                 convo.last_message?.created_at ? new Date(convo.last_message.created_at) : undefined
             }
             isActive={activeConversationId === convo.id}
-            onSelect={handleSelectConversation}
+            onSelect={() => handleSelectConversation(convo.id)}
             leftSection={
                 <>
                     <UserAvatar

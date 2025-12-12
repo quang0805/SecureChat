@@ -1,0 +1,83 @@
+import { useChatStore } from "@/stores/useChatStore"
+import type { Conversation, Participant } from "@/types/chat"
+import { SidebarTrigger } from "../ui/sidebar";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { Separator } from "../ui/separator";
+import UserAvatar from "./UserAvatar";
+import StatusBadge from "./StatusBadge";
+
+const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
+    const { conversations, activeConversationId } = useChatStore()
+    const user = useAuthStore((s) => s.user);
+    let otherUser;
+    chat = chat ?? conversations.find((c) => c.id == activeConversationId);
+    if (!chat) {
+        return (
+            <header className="md:hidden sticky top-0 z-10 flex items-center gap-2 px-4 py-2 w-full">
+                <SidebarTrigger
+                    className="-ml-1 text-foreground hover:bg-primary/10"
+                />
+            </header>
+        )
+    }
+
+    if (chat.type == "private") {
+        const otherUsers = chat.participants.filter((c) => c.id != user?.id)
+        otherUser = otherUsers.length > 0 ? otherUsers[0] : null
+        if (!chat || !otherUser) return;
+    }
+
+
+    return (
+        <header
+            className="sticky top-0 z-10 px-4 py-2 flex items-center bg-background"
+        >
+            <div className="flex items-center gap-1 w-full"
+            >
+                <SidebarTrigger className="-ml-1 text-foreground hover:bg-primary/10" />
+                <Separator
+                    orientation="vertical"
+                    className="mr-2 data-[orientation=vertical]:h-4"
+                />
+                <div className="p-2 w-full flex items-center"
+                >
+                    <div className="relative">{
+                        chat.type == "private" ? (
+                            <>
+                                <UserAvatar
+                                    type={"chat"}
+                                    name={otherUser?.display_name || ""}
+                                    avatarUrl={otherUser?.avatar_url || undefined}
+                                />
+                                <StatusBadge
+                                    status="online"
+                                />
+                            </>
+                        ) : (
+                            <>
+                                <UserAvatar
+                                    type={"chat"}
+                                    name={chat.name}
+                                    avatarUrl={undefined}
+                                />
+                                <StatusBadge
+                                    status="online"
+                                />
+                            </>
+                        )
+                    }</div>
+                    {/* name */}
+                    <h2 className="font-semibold text-foreground m-3">
+                        {
+                            chat.type == "private" ? otherUser?.display_name : chat.name
+                        }
+                    </h2>
+
+                </div>
+            </div>
+
+        </header >
+    )
+}
+
+export default ChatWindowHeader

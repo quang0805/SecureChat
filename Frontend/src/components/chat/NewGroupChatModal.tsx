@@ -1,10 +1,6 @@
-import React from 'react'
-
 const NewGroupChatModal = () => {
     return (
-        <div>
-            NewGroupChatModal
-        </div>
+        <div></div>
     )
 }
 

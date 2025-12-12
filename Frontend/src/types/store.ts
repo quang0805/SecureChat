@@ -32,16 +32,14 @@ export interface ChatState {
     conversations: Conversation[];
     messages: Record<
         string,
-        {
-            items: Message[]
-            hasMore: boolean
-            nextCursor?: string | null
-        }
+        Message[]
     >;
     activeConversationId: string | null
     loading: boolean
+    messageLoading: boolean
     reset: () => void
-    setActiveConversation: (id: string | null) => void
+    setActiveConversationId: (id: string | null) => void
     fetchConversation: () => Promise<void>
-
+    fetchMessages: (id: string) => Promise<void>
+    sendMessage: (conversationId: string, content: string) => Promise<void>
 }

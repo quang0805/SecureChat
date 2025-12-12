@@ -11,7 +11,8 @@ export const useChatStore = create<ChatState>()(
             messages: {},
             activeConversationId: null,
             loading: false,
-            setActiveConversation: (id) => {
+            messageLoading: false,
+            setActiveConversationId: (id) => {
                 set({
                     activeConversationId: id
                 })
@@ -33,6 +34,37 @@ export const useChatStore = create<ChatState>()(
                 } catch (error) {
                     console.error(error);
                     toast.error("Không lấy được dữ liệu các cuộc hội thoại");
+                } finally {
+                    set({ loading: false });
+                }
+            },
+            fetchMessages: async (conversation_id) => {
+                try {
+                    set({ messageLoading: true });
+                    if (conversation_id != null) {
+                        const result = await chatService.fetchMessages(conversation_id);
+                        set({
+                            messages: {
+                                ...get().messages,
+                                [conversation_id]: result
+                            }
+                        })
+                    }
+                } catch (error) {
+                    console.error(error);
+                    toast.error("Không tải được tin nhắn!");
+                } finally {
+                    set({ messageLoading: false })
+                }
+            },
+            sendMessage: async (conversationId, content) => {
+                try {
+                    set({ loading: true });
+                    await chatService.sendMessage(conversationId, content);
+                } catch (error) {
+                    ;
+                    console.log(error)
+                    toast.error("Không gửi được tin nhắn!");
                 } finally {
                     set({ loading: false });
                 }
