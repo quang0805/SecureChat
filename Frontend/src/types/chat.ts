@@ -59,8 +59,5 @@ export interface Message {
     conversation_id: string;
     sender_id: string;
     sender: User;
-    // imgUrl?: string | null;
-    // updatedAt?: string | null;
     created_at: string;
-    // isOwn?: boolean;
 }

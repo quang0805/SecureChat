@@ -32,7 +32,7 @@ export const chatService = {
                     'Content-Type': 'application/json'
                 }
             }
-
         )
+        return res.data
     }
 }

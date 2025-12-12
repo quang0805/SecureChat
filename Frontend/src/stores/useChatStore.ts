@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { chatService } from "@/services/chatService";
 import { toast } from "sonner";
+import { useAuthStore } from "./useAuthStore";
 
 export const useChatStore = create<ChatState>()(
     persist(
@@ -58,17 +59,62 @@ export const useChatStore = create<ChatState>()(
                 }
             },
             sendMessage: async (conversationId, content) => {
+                const currentUser = useAuthStore.getState().user
+                const tempId = `temp-${Date.now()}`;
+
+                const optimisticMessage = {
+                    id: tempId,
+                    content: content,
+                    content_type: 'text',
+                    conversation_id: conversationId,
+                    sender_id: currentUser!.id,
+                    sender: currentUser!,
+                    created_at: new Date().toISOString(),
+                };
+
+                set((state) => {
+                    const currentMessages = state.messages[conversationId] || [];
+                    return {
+                        messages: {
+                            ...state.messages,
+                            [conversationId]: [...currentMessages, optimisticMessage]
+                        }
+                    };
+                });
+
                 try {
-                    set({ loading: true });
-                    await chatService.sendMessage(conversationId, content);
+                    const result = await chatService.sendMessage(conversationId, content);
+
+                    set((state) => {
+                        const currentMessages = state.messages[conversationId] || [];
+
+                        const updatedMessages = currentMessages.map((msg) =>
+                            msg.id === tempId ? result : msg
+                        );
+
+                        return {
+                            messages: {
+                                ...state.messages,
+                                [conversationId]: updatedMessages
+                            }
+                        };
+                    });
+
                 } catch (error) {
-                    ;
-                    console.log(error)
+                    console.error(error);
                     toast.error("Không gửi được tin nhắn!");
-                } finally {
-                    set({ loading: false });
+
+                    set((state) => {
+                        const currentMessages = state.messages[conversationId] || [];
+                        return {
+                            messages: {
+                                ...state.messages,
+                                [conversationId]: currentMessages.filter(msg => msg.id !== tempId)
+                            }
+                        };
+                    });
                 }
-            }
+            },
         }),
         {
             name: "chat-storage",
