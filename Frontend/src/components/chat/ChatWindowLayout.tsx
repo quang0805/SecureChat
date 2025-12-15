@@ -12,7 +12,6 @@ const ChatWindowLayout = () => {
     if (!selectedConvo) {
         return <ChatWelcomeScreen />
     }
-
     if (loading) {
         return <ChatWindowSkeleton />
     }

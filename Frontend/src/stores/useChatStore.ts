@@ -4,6 +4,7 @@ import { persist } from "zustand/middleware";
 import { chatService } from "@/services/chatService";
 import { toast } from "sonner";
 import { useAuthStore } from "./useAuthStore";
+import type { Message } from "@/types/chat";
 
 export const useChatStore = create<ChatState>()(
     persist(
@@ -115,6 +116,24 @@ export const useChatStore = create<ChatState>()(
                     });
                 }
             },
+            handleIncomingMessage: (message: Message) => {
+                const conversationId = message.conversation_id;
+                set((state) => {
+                    const currentMessages = state.messages[conversationId] || [];
+
+                    // Kiểm tra tin nhắn đã tồn tại hay chưa, trường hợp nhận 2 lần.
+                    if (currentMessages.some(m => m.id === message.id)) {
+                        return state;
+                    }
+
+                    return {
+                        messages: {
+                            ...state.messages,
+                            [conversationId]: [...currentMessages, message]
+                        }
+                    };
+                });
+            }
         }),
         {
             name: "chat-storage",

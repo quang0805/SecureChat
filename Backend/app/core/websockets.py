@@ -27,6 +27,7 @@ class ConnectionManager:
                 for connection in self.active_connections[user_id]:
                     try:
                         await connection.send_text(message_json)
+                        print("Broad cast to all user in chat!")
                     except Exception as e:
                         print(f"Could not send message to user {user_id}: {e}")
                         

@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy.orm import Session,joinedload
 from fastapi import HTTPException, status
 from app.models import Message, Participant
-from app.schemas.message import MessageCreate
+from app.schemas.message import MessageCreate, Message as MessageSchema
 from app.core.websockets import manager
 from app.services import user_service
 
@@ -37,7 +37,8 @@ async def create_message(db: Session, message_data: MessageCreate, conversation_
 
     # Chuẩn bị dữ liệu để gửi đi. 
     db_message.sender = user_service.get_user(db,sender_id)
-    message_schema = MessageCreate.model_validate(db_message)
+    # message_schema = MessageCreate.model_validate(db_message)
+    message_schema = MessageSchema.model_validate(db_message)
 
     # Gửi dữ liệu tới những người tham gia trong cuộc hội thoại. 
     broadcast_data = {
