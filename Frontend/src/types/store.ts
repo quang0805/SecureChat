@@ -43,4 +43,5 @@ export interface ChatState {
     fetchMessages: (id: string) => Promise<void>
     sendMessage: (conversationId: string, content: string) => Promise<void>
     handleIncomingMessage: (message: Message) => void
+    updateLastMessage: (message: Message) => void
 }

@@ -85,6 +85,8 @@ export const useChatStore = create<ChatState>()(
 
                 try {
                     const result = await chatService.sendMessage(conversationId, content);
+                    get().updateLastMessage(result);
+
 
                     set((state) => {
                         const currentMessages = state.messages[conversationId] || [];
@@ -118,10 +120,11 @@ export const useChatStore = create<ChatState>()(
             },
             handleIncomingMessage: (message: Message) => {
                 const conversationId = message.conversation_id;
+                get().updateLastMessage(message);
                 set((state) => {
                     const currentMessages = state.messages[conversationId] || [];
 
-                    // Kiểm tra tin nhắn đã tồn tại hay chưa, trường hợp nhận 2 lần.
+                    // Kiểm tra tin nhắn đã tồn tại hay chưa,tranhs trường hợp nhận 2 lần.
                     if (currentMessages.some(m => m.id === message.id)) {
                         return state;
                     }
@@ -133,6 +136,23 @@ export const useChatStore = create<ChatState>()(
                         }
                     };
                 });
+            },
+            updateLastMessage: (message: Message) => {
+                const conversationId = message.conversation_id;
+                set((state) => {
+                    const updateConversations = state.conversations.map((convo) => {
+                        if (convo.id === conversationId) {
+                            return {
+                                ...convo,
+                                last_message: message
+                            }
+                        }
+                        return convo;
+                    })
+                    return {
+                        conversations: updateConversations
+                    }
+                })
             }
         }),
         {
