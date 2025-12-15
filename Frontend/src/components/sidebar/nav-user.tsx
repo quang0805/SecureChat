@@ -4,7 +4,9 @@ import {
   ChevronsUpDown,
   CreditCard,
   LogOut,
+  Moon,
   Sparkles,
+  Sun,
   UserIcon,
 } from "lucide-react"
 
@@ -30,11 +32,10 @@ import {
 } from "@/components/ui/sidebar"
 import type { User } from "@/types/user"
 import Logout from "../auth/Logout"
-
+import { useThemeStore } from "@/stores/useThemeStore"
 export function NavUser(
   { user }: { user: User }) {
   const { isMobile } = useSidebar()
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>

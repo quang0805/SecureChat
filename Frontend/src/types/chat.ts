@@ -41,11 +41,7 @@ export interface Conversation {
     participants: Participant[];
     last_message: Message | null;
     name: string;
-    // seenBy: SeenUser[];
-    // lastMessage: LastMessage | null
-    // unreadCounts: Record<string, number>; // key = userId, value = unread count
-    // createdAt: string;
-    // updatedAt: string;
+
 }
 
 export interface ConversationResponse {

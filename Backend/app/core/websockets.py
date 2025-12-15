@@ -6,7 +6,6 @@ import json
 
 class ConnectionManager:
     def __init__(self):
-        # Lưu các kết nối hoạt động: {user_id: [websocket1, websocket2, ...]}
         self.active_connections: dict[uuid.UUID, list[WebSocket]] = defaultdict(list)
 
     async def connect(self, websocket: WebSocket, user_id: uuid.UUID):
@@ -22,8 +21,7 @@ class ConnectionManager:
             del self.active_connections[user_id]
 
     async def broadcast(self, message: dict, user_ids: list[uuid.UUID]):
-        """Gửi tin nhắn đến một danh sách người dùng cụ thể."""
-        message_json = json.dumps(message, default=str) # Chuyển đổi dict thành chuỗi JSON
+        message_json = json.dumps(message, default=str)
         for user_id in user_ids:
             if user_id in self.active_connections:
                 for connection in self.active_connections[user_id]:
@@ -31,6 +29,5 @@ class ConnectionManager:
                         await connection.send_text(message_json)
                     except Exception as e:
                         print(f"Could not send message to user {user_id}: {e}")
-                        # Có thể xóa kết nối hỏng ở đây nếu cần
                         
 manager = ConnectionManager()

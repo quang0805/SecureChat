@@ -9,7 +9,7 @@ const MessageInput = () => {
     const { user } = useAuthStore();
     const { activeConversationId, sendMessage } = useChatStore()
     const [value, setValue] = useState("")
-    const inputRef = useRef(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     if (!user) return;
     const handleSendMessage = async (message: string) => {
         if (!value.trim()) return;

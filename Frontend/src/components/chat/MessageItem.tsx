@@ -17,7 +17,7 @@ const MessageItem = ({ message, index, messages, selectedConvo, lastMessageStatu
     const user = useAuthStore((s) => s.user)
     const isOwn = user?.id === message.sender_id ? true : false
     const nextMsg = messages[index + 1];
-    const prev = messages[index - 1];
+    // const prev = messages[index - 1];
     const isGroupBreak = !nextMsg ||
         message.sender_id !== nextMsg?.sender_id ||
         new Date(nextMsg?.created_at).getTime() -

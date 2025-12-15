@@ -18,9 +18,7 @@ async def websocket_endpoint(
     await manager.connect(websocket, user.id)
     try:    
         while True:
-            # Chờ nhận tin nhắn từ client (implement "is typing...")
             data = await websocket.receive_text()
-            # Ví dụ: await manager.broadcast(...) nếu muốn client này gửi tin cho người khác
     except WebSocketDisconnect:
         manager.disconnect(websocket, user.id)
     except Exception as e:
