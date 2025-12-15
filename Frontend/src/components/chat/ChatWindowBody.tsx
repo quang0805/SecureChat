@@ -3,18 +3,25 @@ import MessageItem from "./MessageItem";
 import { useEffect, useRef } from "react";
 
 const ChatWindowBody = () => {
-    const {
-        activeConversationId,
-        conversations,
-        messages: allMessages
-    } = useChatStore();
-    const messagesEndRef = useRef<HTMLDivElement>(null)
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
+    const activeConversationId = useChatStore((s) => s.activeConversationId);
+    const conversations = useChatStore((s) => s.conversations);
+    const allMessages = useChatStore((s) => s.messages);
+    const fetchMessages = useChatStore((s) => s.fetchMessages);
+
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (activeConversationId) {
+            fetchMessages(activeConversationId);
+        }
+    }, [activeConversationId, fetchMessages])
+
     const messages = allMessages[activeConversationId!] ?? [];
     const selectedConvo = conversations.find((c) => c.id == activeConversationId);
 
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
     useEffect(() => {
         if (messages.length > 10) {
             scrollToBottom();
@@ -31,7 +38,7 @@ const ChatWindowBody = () => {
             <div className="mx-10 p-5 flex flex-col overflow-y-auto overflow-x-hidden beautiful-scrollbar">
                 {messages.map((message, index) => (
                     <MessageItem
-                        key={index}
+                        key={message.id}
                         message={message}
                         index={index}
                         messages={messages}

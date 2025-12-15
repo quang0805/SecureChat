@@ -5,6 +5,7 @@ from app.core.security import get_current_user
 from app.schemas import user as user_schema
 from app.services import user_service
 from app.models import User
+from app.core.websockets import manager
 
 router = APIRouter()
 
@@ -18,3 +19,13 @@ router = APIRouter()
 @router.get("/me", response_model=user_schema.User)
 def read_users_me(current_user: User = Depends(get_current_user)):
     return current_user
+
+
+@router.get("/online")
+def get_user_online(user: User = Depends(get_current_user)):
+    users_online = []
+    for userId, sockets in manager.active_connections.items():
+        if(len(sockets) > 0):
+            users_online.append(userId)
+    
+    return users_online

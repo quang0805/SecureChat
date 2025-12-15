@@ -37,6 +37,7 @@ export interface ChatState {
     activeConversationId: string | null
     loading: boolean
     messageLoading: boolean
+    onlineUserIds: string[]
     reset: () => void
     setActiveConversationId: (id: string | null) => void
     fetchConversation: () => Promise<void>
@@ -44,4 +45,7 @@ export interface ChatState {
     sendMessage: (conversationId: string, content: string) => Promise<void>
     handleIncomingMessage: (message: Message) => void
     updateLastMessage: (message: Message) => void
+    setOnlineUsers: (ids: string[]) => void
+    handleUserStatusChange: (userId: string, status: 'online' | 'offline') => void
+    fetchUsersOnline: () => Promise<void>
 }

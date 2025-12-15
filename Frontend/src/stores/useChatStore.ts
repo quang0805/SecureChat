@@ -14,6 +14,7 @@ export const useChatStore = create<ChatState>()(
             activeConversationId: null,
             loading: false,
             messageLoading: false,
+            onlineUserIds: [],
             setActiveConversationId: (id) => {
                 set({
                     activeConversationId: id
@@ -43,6 +44,10 @@ export const useChatStore = create<ChatState>()(
             fetchMessages: async (conversation_id) => {
                 try {
                     set({ messageLoading: true });
+                    if (get().messages[conversation_id] && get().messages[conversation_id].length > 0) {
+                        return;
+                    }
+
                     if (conversation_id != null) {
                         const result = await chatService.fetchMessages(conversation_id);
                         set({
@@ -86,8 +91,6 @@ export const useChatStore = create<ChatState>()(
                 try {
                     const result = await chatService.sendMessage(conversationId, content);
                     get().updateLastMessage(result);
-
-
                     set((state) => {
                         const currentMessages = state.messages[conversationId] || [];
 
@@ -140,21 +143,52 @@ export const useChatStore = create<ChatState>()(
             updateLastMessage: (message: Message) => {
                 const conversationId = message.conversation_id;
                 set((state) => {
-                    const updateConversations = state.conversations.map((convo) => {
-                        if (convo.id === conversationId) {
-                            return {
-                                ...convo,
-                                last_message: message
-                            }
-                        }
-                        return convo;
-                    })
-                    return {
-                        conversations: updateConversations
+                    const conversation = state.conversations.find((convo) => convo.id === conversationId);
+                    if (!conversation) {
+                        return state;
                     }
+
+                    // Cập nhật tin nhắn cuối cùng của cuộc hội thoại.
+                    const updatedConversation = {
+                        ...conversation,
+                        last_message: message
+                    }
+
+                    const otherConversations = state.conversations.filter((convo) => convo.id !== conversationId);
+
+                    return {
+                        conversations: [updatedConversation, ...otherConversations]
+                    }
+
+
                 })
+            },
+            handleUserStatusChange: (userId, status) => {
+                set((state) => {
+                    const currentList = state.onlineUserIds;
+
+                    if (status === 'online') {
+                        if (!currentList.includes(userId)) {
+                            return { onlineUserIds: [...currentList, userId] }; // Nếu online => thêm id vào danh sách người online
+                        }
+                    } else {
+                        return { onlineUserIds: currentList.filter(id => id !== userId) }; // Nếu offline => xóa id khỏi danh sách
+                    }
+                    return state;
+                });
+            },
+            setOnlineUsers: (ids) => set({ onlineUserIds: ids }),
+            fetchUsersOnline: async () => {
+                try {
+                    const usersOnlineIds = await chatService.fetchUsersOnline();
+                    if (!usersOnlineIds) return;
+                    get().setOnlineUsers(usersOnlineIds);
+                } catch (error) {
+                    console.log(error)
+                }
             }
         }),
+
         {
             name: "chat-storage",
             partialize: (state) => ({

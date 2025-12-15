@@ -10,12 +10,10 @@ const GroupChatCard = ({ convo }: { convo: Conversation }) => {
     if (!user) return null;
     const otherUsers = convo.participants.find((p) => p.id !== user.id)
     if (!otherUsers) return null;
-    const lastMessage = convo.last_message?.content ?? "";
     const handleSelectConversation = async (id: string) => {
         setActiveConversationId(id)
         if (!messages[id]) {
             setActiveConversationId(id);
-            fetchMessages(id);
         }
     }
 

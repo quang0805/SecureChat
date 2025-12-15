@@ -4,21 +4,19 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { useChatStore } from '@/stores/useChatStore';
 import UserAvatar from './UserAvatar';
 import StatusBadge from './StatusBadge';
-import { useEffect } from 'react';
 
 const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
     const user = useAuthStore((s) => s.user)
-    const { activeConversationId, setActiveConversationId, fetchMessages } = useChatStore()
-
-    if (!user) return null;
-    const otherUser = convo.participants.find((p) => p.id !== user.id)
-    if (!otherUser) return null;
-
+    const { activeConversationId, setActiveConversationId, onlineUserIds } = useChatStore()
     const lastMessage = convo.last_message?.content ?? "";
     const handleSelectConversation = async (id: string) => {
         setActiveConversationId(id);
-        fetchMessages(id);
     }
+    if (!user) return null;
+    const otherUser = convo.participants.find((p) => p.id !== user.id);
+    if (!otherUser) return null;
+    const isOnline = onlineUserIds.includes(otherUser.id);
+
     return (
         <ChatCard
             convoId={convo.id}
@@ -36,7 +34,7 @@ const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
                         avatarUrl={otherUser.avatar_url ?? undefined}
                     />
                     {/* Todo: Websocket */}
-                    <StatusBadge status='offline' />
+                    <StatusBadge status={isOnline ? "online" : "offline"} />
                 </>
             }
             subtitle={

@@ -28,11 +28,6 @@ const MessageInput = () => {
             }
         }
     }
-
-
-    useEffect(() => {
-        console.log(value)
-    }, [value])
     return (
         <div className="flex items-center justify-between gap-2 p-3 min-h-14 bg-background">
             <Button

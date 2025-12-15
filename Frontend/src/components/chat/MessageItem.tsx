@@ -61,7 +61,7 @@ const MessageItem = ({ message, index, messages, selectedConvo, lastMessageStatu
                         isOwn ? "bg-chat-bubble-sent border-0" : "bg-chat-bubble-received"
                     )}
                 >
-                    <p className="text-sm leading-relaxed wrap-break-word">
+                    <p className="text-sm leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere]">
                         {message.content}
                     </p>
                 </Card>

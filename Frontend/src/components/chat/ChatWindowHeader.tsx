@@ -7,7 +7,7 @@ import UserAvatar from "./UserAvatar";
 import StatusBadge from "./StatusBadge";
 
 const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
-    const { conversations, activeConversationId } = useChatStore()
+    const { conversations, activeConversationId, onlineUserIds } = useChatStore()
     const user = useAuthStore((s) => s.user);
     let otherUser;
     chat = chat ?? conversations.find((c) => c.id == activeConversationId);
@@ -20,12 +20,13 @@ const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
             </header>
         )
     }
-
+    const otherUsers = chat.participants.filter((c) => c.id != user?.id)
     if (chat.type == "private") {
-        const otherUsers = chat.participants.filter((c) => c.id != user?.id)
         otherUser = otherUsers.length > 0 ? otherUsers[0] : null
         if (!chat || !otherUser) return;
     }
+
+    const isOnline = onlineUserIds.includes(otherUsers[0].id)
 
 
     return (
@@ -50,7 +51,7 @@ const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
                                     avatarUrl={otherUser?.avatar_url || undefined}
                                 />
                                 <StatusBadge
-                                    status="online"
+                                    status={isOnline ? "online" : "offline"}
                                 />
                             </>
                         ) : (
@@ -61,7 +62,7 @@ const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
                                     avatarUrl={undefined}
                                 />
                                 <StatusBadge
-                                    status="online"
+                                    status={isOnline ? "online" : "offline"}
                                 />
                             </>
                         )

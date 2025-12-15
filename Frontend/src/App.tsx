@@ -34,14 +34,14 @@ function App() {
 
 
           {/**Protected route */}
-          {/* <Route
-            element={<ProtectedRoute />}
-          > */}
           <Route
-            path="/"
-            element={<ChatAppPage />}
-          />
-          {/* </Route> */}
+            element={<ProtectedRoute />}
+          >
+            <Route
+              path="/"
+              element={<ChatAppPage />}
+            />
+          </Route>
         </Routes>
       </BrowserRouter>
     </>

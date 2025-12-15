@@ -34,5 +34,10 @@ export const chatService = {
             }
         )
         return res.data
+    },
+
+    async fetchUsersOnline() {
+        const res = await api.get('/users/online');
+        return res.data;
     }
 }
