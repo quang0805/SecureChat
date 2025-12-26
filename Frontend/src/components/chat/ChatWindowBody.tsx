@@ -1,6 +1,6 @@
 import { useChatStore } from "@/stores/useChatStore"
 import MessageItem from "./MessageItem";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 
 const ChatWindowBody = () => {
     const activeConversationId = useChatStore((s) => s.activeConversationId);
@@ -19,14 +19,15 @@ const ChatWindowBody = () => {
     const messages = allMessages[activeConversationId!] ?? [];
     const selectedConvo = conversations.find((c) => c.id == activeConversationId);
 
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
-    useEffect(() => {
-        if (messages.length > 10) {
-            scrollToBottom();
-        }
-    }, [messages]);
+    // const scrollToBottom = () => {
+    //     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // };
+    // useEffect(() => {
+    //     if (messages.length > 10) {
+    //         scrollToBottom();
+    //     }
+    // }, [messages]);
+    const reversedMessages = useMemo(() => [...messages].reverse(), [messages]);
     if (!selectedConvo) return;
     if (!messages?.length) {
         return <div className="flex h-full justify-center items-center text-muted-foreground">
@@ -35,8 +36,8 @@ const ChatWindowBody = () => {
     }
     return (
         <div className="p-5 bg-primary-foreground h-full flex flex-col overflow-hidden">
-            <div className="mx-10 p-5 flex flex-col overflow-y-auto overflow-x-hidden beautiful-scrollbar">
-                {messages.map((message, index) => (
+            <div className="mx-10 p-5 flex flex-col-reverse overflow-y-auto overflow-x-hidden beautiful-scrollbar">
+                {reversedMessages.map((message, index) => (
                     <MessageItem
                         key={message.id}
                         message={message}

@@ -1,3 +1,4 @@
+// chatService.ts
 import api from "@/lib/axios";
 import type { Conversation } from "@/types/chat";
 import type { Message } from "@/types/chat";

@@ -1,3 +1,4 @@
+// WebSocketManager.tsx
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useChatStore } from '@/stores/useChatStore';
 import { useEffect } from 'react';

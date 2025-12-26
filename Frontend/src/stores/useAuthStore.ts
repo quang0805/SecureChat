@@ -1,3 +1,4 @@
+// useAuthStore.ts
 import { create } from "zustand"
 import { persist, createJSONStorage } from "zustand/middleware"
 import { toast } from "sonner"
