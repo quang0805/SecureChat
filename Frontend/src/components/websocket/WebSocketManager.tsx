@@ -29,6 +29,7 @@ const WebSocketManager = () => {
                 const data = JSON.parse(lastMessage.data);
 
                 if (data.type === 'new_message' && data.payload) { // Kieemr tra cấu trúc backend trả về.
+                    console.log(`Message - WebsocketManager: ${data.payload}`)
                     handleIncomingMessage(data.payload);
                     console.log("Tin nhắn nhận được:", data.payload);
                 } else if (data.type === "user_status_change" && data.payload) {

@@ -22,12 +22,13 @@ export const chatService = {
         return res.data;
     },
 
-    async sendMessage(conversationId: string, content: string) {
-        const data = {
-            content: content,
-            content_type: "text"
-        }
-        const res = await api.post(`/conversations/${conversationId}/messages`, data,
+    async sendMessage(conversationId: string, payload: {
+        content: string,
+        content_type: string,
+        encrypted_aes_key?: string,
+        iv?: string
+    }) {
+        const res = await api.post(`/conversations/${conversationId}/messages`, payload,
             {
                 headers: {
                     'Content-Type': 'application/json'

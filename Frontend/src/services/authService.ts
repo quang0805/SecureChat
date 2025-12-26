@@ -5,11 +5,13 @@ export const authService = {
         username: string,
         password: string,
         firstName: string,
-        lastName: string
+        lastName: string,
+        pubKeyStr: string,
+        privKeyStr: string
     ) => {
         const res = await api.post(
             "/auth/signup",
-            { username, password, display_name: `${firstName} ${lastName}` },
+            { username, password, display_name: `${firstName} ${lastName}`, public_key: pubKeyStr, encrypted_private_key: privKeyStr },
             { withCredentials: true }
         )
         return res.data;

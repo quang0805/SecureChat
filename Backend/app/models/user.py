@@ -16,3 +16,7 @@ class User(Base):
 
      # Relationships
     messages_sent = relationship("Message", back_populates="sender")
+
+    #E2EE
+    public_key = Column(Text, nullable=True)  # Lưu RSA Public Key (PEM format)
+    encrypted_private_key = Column(Text, nullable=True)  # Lưu RSA Private Key đã bị mã hóa bởi PBKDF2

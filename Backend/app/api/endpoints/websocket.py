@@ -20,8 +20,7 @@ async def websocket_endpoint(
         while True:
             await websocket.receive_text()
     except WebSocketDisconnect:
-        manager.disconnect(websocket, user.id, user.username)
-        await manager.broadcast_status_change(user.id, "offline")
+        await manager.disconnect(websocket, user.id, user.username)
     except Exception as e:
         print(f"Error in websocket for user {user.id}: {e}")
         manager.disconnect(websocket, user.id)

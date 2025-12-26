@@ -7,12 +7,12 @@ import ChatWindowBody from "./ChatWindowBody";
 import MessageInput from "./MessageInput";
 
 const ChatWindowLayout = () => {
-    const { activeConversationId, messages, messageLoading: loading, conversations } = useChatStore()
+    const { activeConversationId, messages, messageLoading, conversations } = useChatStore()
     const selectedConvo = conversations.find((c) => c.id == activeConversationId) ?? null;
     if (!selectedConvo) {
         return <ChatWelcomeScreen />
     }
-    if (loading) {
+    if (messageLoading) {
         return <ChatWindowSkeleton />
     }
     return (

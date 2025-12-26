@@ -7,8 +7,9 @@ from app.schemas.message import MessageCreate, Message as MessageSchema
 from app.core.websockets import manager
 from app.services import user_service
 
+
 async def create_message(db: Session, message_data: MessageCreate, conversation_id: uuid.UUID, sender_id: uuid.UUID):
-    # Kiểm tra xem người gửi có phải là thành viên của cuộc hội thoại không
+    # 1. Kiểm tra xem người gửi có phải là thành viên của cuộc hội thoại không
     is_participant = db.query(Participant).filter(
         Participant.conversation_id == conversation_id,
         Participant.user_id == sender_id
@@ -20,33 +21,42 @@ async def create_message(db: Session, message_data: MessageCreate, conversation_
             detail="You are not a member of this conversation"
         )
 
+    # 2. Tạo đối tượng tin nhắn và lưu vào Database
     db_message = Message(
         conversation_id=conversation_id,
         sender_id=sender_id,
-        content=message_data.content,
-        content_type=message_data.content_type
+        content=message_data.content, # Ciphertext từ Client
+        content_type=message_data.content_type,
+        # Lưu các trường E2EE phục vụ giải mã
+        encrypted_aes_key=message_data.encrypted_aes_key,
+        iv=message_data.iv
     )
     db.add(db_message)
     db.commit()
     db.refresh(db_message)
 
-    # Lấy danh sách tất cả các người tham gia trong cuộc hội thoại (trừ người gửi)
-    participants = db.query(Participant).filter(Participant.conversation_id == conversation_id)
-    participant_ids = [p.user_id for p in participants if p.user_id != sender_id]
+    # 3. Lấy thông tin người gửi để map vào schema (để hiển thị display_name, avatar...)
+    db_message.sender = user_service.get_user(db, sender_id)
 
+    # 4. Chuyển đổi sang Schema để chuẩn hóa dữ liệu gửi đi (vừa để trả về API, vừa để gửi Socket)
+    # model_validate sẽ tự động xử lý các trường UUID, datetime thành string
+    message_output = MessageSchema.model_validate(db_message)
 
-    # Chuẩn bị dữ liệu để gửi đi. 
-    db_message.sender = user_service.get_user(db,sender_id)
-    # message_schema = MessageCreate.model_validate(db_message)
-    message_schema = MessageSchema.model_validate(db_message)
+    # 5. Lấy danh sách tất cả các người tham gia trong cuộc hội thoại
+    # Lưu ý: Nên gửi cho cả chính mình (sender) để đồng bộ giữa các tab/thiết bị khác nhau của cùng 1 user
+    participants = db.query(Participant.user_id).filter(
+        Participant.conversation_id == conversation_id
+    ).all()
+    participant_ids = [p.user_id for p in participants]
 
-    # Gửi dữ liệu tới những người tham gia trong cuộc hội thoại. 
+    # 6. Chuẩn bị dữ liệu để broadcast qua WebSocket
     broadcast_data = {
         "type": "new_message",
-        "payload" : message_schema.model_dump()
+        "payload": message_output.model_dump(mode='json') # mode='json' giúp format datetime/uuid chuẩn
     }
-
+    # 7. Gửi dữ liệu tới những người tham gia
     await manager.broadcast(broadcast_data, participant_ids)
+
     return db_message
 
 

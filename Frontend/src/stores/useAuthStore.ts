@@ -5,6 +5,7 @@ import { toast } from "sonner"
 import { authService } from "@/services/authService"
 import type { AuthState } from "@/types/store"
 import { useChatStore } from "./useChatStore"
+import { cryptoUtils } from "@/lib/cryptoUtils"
 
 export const useAuthStore = create<AuthState>()(
     persist(
@@ -12,7 +13,7 @@ export const useAuthStore = create<AuthState>()(
             accessToken: null,
             user: null,
             loading: false,
-
+            privateKey: null,
             clearState: () => {
                 set({ accessToken: null, user: null, loading: false })
                 localStorage.clear()
@@ -23,9 +24,16 @@ export const useAuthStore = create<AuthState>()(
 
                 try {
                     set({ loading: true })
-                    const res = await authService.signUp(username, password, firstName, lastName)
-                    console.log(res.data)
-                    toast.success("Đăng ký thành công!")
+                    // 1. Tạo cặp khóa E2EE
+                    const keyPair = await cryptoUtils.generateKeyPair();
+                    const pubKeyStr = await cryptoUtils.exportKey(keyPair.publicKey);
+                    const privKeyStr = await cryptoUtils.exportKey(keyPair.privateKey);
+                    // 2. Gửi kèm Public Key lên Server
+                    const res = await authService.signUp(username, password, firstName, lastName, pubKeyStr, privKeyStr);
+                    // 3. Lưu Private key vào LocalStorage (hoặc IndexedDB) để dùng sau này
+                    localStorage.setItem(`priv_key_${username}`, privKeyStr);
+                    console.log(res.data);
+                    toast.success("Đăng ký thành công!");
                 } catch (error) {
                     console.error(error);
                     toast.error("Đăng ký không thành công!")

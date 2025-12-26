@@ -5,6 +5,7 @@ export interface AuthState {
     accessToken: string | null;
     user: User | null;
     loading: boolean;
+    privateKey: CryptoKey | null;
     clearState: () => void;
     signUp: (
         username: string,

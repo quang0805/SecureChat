@@ -12,7 +12,14 @@ def get_user_by_username(db: Session, username: str):
 
 def create_user(db: Session, user: UserCreate):
     hashed_password = get_password_hash(user.password)
-    db_user = User(username=user.username, password=hashed_password, display_name=user.display_name)
+    db_user = User(
+        username=user.username,
+        password=hashed_password,
+        display_name=user.display_name,
+        avatar_url = user.avatar_url,
+        public_key = user.public_key,
+        encrypted_private_key = user.encrypted_private_key
+    )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

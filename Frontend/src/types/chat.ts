@@ -7,6 +7,7 @@ export interface Participant {
     display_name: string;
     // avatarUrl?: string | null;
     // joinedAt: string;
+    public_key: string | null;
     created_at: string;
     updated_at?: string | null;
 }
@@ -51,6 +52,8 @@ export interface ConversationResponse {
 export interface Message {
     id: string;
     content: string;
+    encrypted_aes_key: string | null;
+    iv: string | null;
     content_type: string;
     conversation_id: string;
     sender_id: string;

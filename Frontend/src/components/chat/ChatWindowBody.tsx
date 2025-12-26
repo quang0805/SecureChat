@@ -14,19 +14,14 @@ const ChatWindowBody = () => {
         if (activeConversationId) {
             fetchMessages(activeConversationId);
         }
-    }, [activeConversationId, fetchMessages])
+    }, [activeConversationId])
 
-    const messages = allMessages[activeConversationId!] ?? [];
+    const messages = useMemo(() => {
+        if (!activeConversationId) return [];
+        return allMessages[activeConversationId] ?? [];
+    }, [allMessages, activeConversationId]);
+
     const selectedConvo = conversations.find((c) => c.id == activeConversationId);
-
-    // const scrollToBottom = () => {
-    //     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    // };
-    // useEffect(() => {
-    //     if (messages.length > 10) {
-    //         scrollToBottom();
-    //     }
-    // }, [messages]);
     const reversedMessages = useMemo(() => [...messages].reverse(), [messages]);
     if (!selectedConvo) return;
     if (!messages?.length) {
