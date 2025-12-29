@@ -30,12 +30,76 @@ export const useChatStore = create<ChatState>()(
                     loading: false
                 })
             },
+            // CẦN TỐI ƯU LOGIC DECRYPT MESSAGE GIỮA CÁC HÀM : 29-12-2025
             fetchConversation: async () => {
                 try {
                     set({ loading: true });
                     const result = await chatService.fetchConversations();
-                    set({ conversations: result });
-                    console.log(result);
+
+                    const currentUser = useAuthStore.getState().user;
+                    if (!currentUser) {
+                        set({ conversations: result });
+                        return;
+                    }
+
+                    // 1. Lấy Private Key từ LocalStorage để sẵn sàng giải mã
+                    const privKeyStr = localStorage.getItem(`priv_key_${currentUser.username}`);
+
+                    if (!privKeyStr) {
+                        set({ conversations: result });
+                        return;
+                    }
+
+                    const myPrivateKey = await cryptoUtils.importKey(privKeyStr, "private");
+
+                    // 2. Duyệt qua từng cuộc hội thoại để giải mã last_message
+                    const decryptedConversations = await Promise.all(result.map(async (convo) => {
+                        const lastMsg = convo.last_message;
+
+                        // Nếu không có tin nhắn cuối hoặc tin nhắn không có thông tin E2EE
+                        if (!lastMsg || !lastMsg.iv) {
+                            return convo;
+                        }
+
+                        try {
+                            // 3. Xác định dùng chìa khóa nào (người gửi hay người nhận)
+                            const aesKeyToDecrypt = (lastMsg.sender_id === currentUser.id)
+                                ? lastMsg.encrypted_aes_key_sender
+                                : lastMsg.encrypted_aes_key;
+
+                            if (aesKeyToDecrypt) {
+                                const plainText = await cryptoUtils.decryptMessage(
+                                    lastMsg.content,
+                                    aesKeyToDecrypt,
+                                    lastMsg.iv,
+                                    myPrivateKey
+                                );
+
+                                // Trả về conversation với nội dung last_message đã giải mã
+                                return {
+                                    ...convo,
+                                    last_message: {
+                                        ...lastMsg,
+                                        content: plainText
+                                    }
+                                };
+                            }
+                        } catch (error) {
+                            console.error(`Lỗi giải mã last_message cho convo ${convo.id}:`, error);
+                            return {
+                                ...convo,
+                                last_message: {
+                                    ...lastMsg,
+                                    content: "[Tin nhắn mã hóa]"
+                                }
+                            };
+                        }
+                        return convo;
+                    }));
+
+                    set({ conversations: decryptedConversations });
+                    console.log("Đã giải mã danh sách hội thoại:", decryptedConversations);
+
                 } catch (error) {
                     console.error(error);
                     toast.error("Không lấy được dữ liệu các cuộc hội thoại");
