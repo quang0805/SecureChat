@@ -137,21 +137,31 @@ export const useChatStore = create<ChatState>()(
 
 
                     const result = await chatService.sendMessage(conversationId, payload);
-                    get().updateLastMessage(result);
-                    set((state) => {
-                        const currentMessages = state.messages[conversationId] || [];
+                    const messageToStore = { ...result, content: content };
+                    get().updateLastMessage(messageToStore);
 
-                        const updatedMessages = currentMessages.map((msg) =>
-                            msg.id === tempId ? result : msg
-                        );
 
-                        return {
-                            messages: {
-                                ...state.messages,
-                                [conversationId]: updatedMessages
-                            }
-                        };
-                    });
+                    // set((state) => {
+                    //     const currentMessages = state.messages[conversationId] || [];
+                    //     // Kiểm tra tin nhắn này đã đến do websocket hay chưa
+                    //     const isAlreadyAdded = currentMessages.some(m => m.id === result.id);
+                    //     if (isAlreadyAdded) {
+                    //         return {
+                    //             messages: {
+                    //                 ...state.messages,
+                    //                 [conversationId]: currentMessages.filter(msg => msg.id !== tempId)
+                    //             }
+                    //         };
+                    //     }
+                    //     return {
+                    //         messages: {
+                    //             ...state.messages,
+                    //             [conversationId]: currentMessages.map((msg) =>
+                    //                 msg.id === tempId ? messageToStore : msg
+                    //             )
+                    //         }
+                    //     };
+                    // });
 
                 } catch (error) {
                     console.error(error);
@@ -168,57 +178,105 @@ export const useChatStore = create<ChatState>()(
                     });
                 }
             },
+            // handleIncomingMessage: async (message: Message) => {
+            //     const currentUser = useAuthStore.getState().user;
+            //     const conversationId = message.conversation_id;
+
+            //     try {
+            //         let displayContent = message.content;
+
+            //         // Nếu tin nhắn không phải do mình gửi, thì mới cần giải mã
+            //         // (Nếu do mình gửi, content trong store đã là text thuần từ bước sendMessage rồi)
+            //         if (message.sender_id !== currentUser?.id) {
+            //             // 1. Lấy Private Key của mình từ LocalStorage
+            //             const privKeyStr = localStorage.getItem(`priv_key_${currentUser?.username}`);
+            //             if (!privKeyStr) throw new Error("Missing Private Key");
+
+            //             const myPrivateKey = await cryptoUtils.importKey(privKeyStr, "private");
+
+            //             // 2. Giải mã nội dung
+            //             displayContent = await cryptoUtils.decryptMessage(
+            //                 message.content,
+            //                 message.encrypted_aes_key!,
+            //                 message.iv!,
+            //                 myPrivateKey
+            //             );
+            //         }
+
+            //         const decryptedMessage = { ...message, content: displayContent };
+
+            //         // 3. Cập nhật vào State
+            //         get().updateLastMessage(decryptedMessage);
+            //         set((state) => {
+            //             const currentMessages = state.messages[conversationId] || [];
+            //             if (currentMessages.some(m => m.id === message.id)) {
+            //                 return state;
+            //             }
+            //             return {
+            //                 messages: {
+            //                     ...state.messages,
+            //                     [conversationId]: [...currentMessages, decryptedMessage]
+            //                 }
+            //             };
+            //         });
+            //     } catch (err) {
+
+            //         console.error("Lỗi giải mã tin nhắn đến:", err);
+            //         // Nếu lỗi, vẫn hiển thị tin nhắn nhưng ghi chú là không thể giải mã
+            //         const errorMessage = { ...message, content: "[Tin nhắn mã hóa - Không thể giải mã]" };
+            //         set((state) => ({
+            //             messages: {
+            //                 ...state.messages,
+            //                 [conversationId]: [...(state.messages[conversationId] || []), errorMessage]
+            //             }
+            //         }));
+            //     }
+            // },
             handleIncomingMessage: async (message: Message) => {
                 const currentUser = useAuthStore.getState().user;
                 const conversationId = message.conversation_id;
 
+                // 1. Kiểm tra trùng lặp (nếu tin nhắn ID này đã có trong store thì bỏ qua luôn)
+                const currentMessages = get().messages[conversationId] || [];
+                if (currentMessages.some(m => m.id === message.id)) {
+                    return;
+                }
+
                 try {
                     let displayContent = message.content;
 
-                    // Nếu tin nhắn không phải do mình gửi, thì mới cần giải mã
-                    // (Nếu do mình gửi, content trong store đã là text thuần từ bước sendMessage rồi)
+                    // 2. Nếu là tin nhắn của người khác gửi đến -> PHẢI GIẢI MÃ
                     if (message.sender_id !== currentUser?.id) {
-                        // 1. Lấy Private Key của mình từ LocalStorage
                         const privKeyStr = localStorage.getItem(`priv_key_${currentUser?.username}`);
-                        if (!privKeyStr) throw new Error("Missing Private Key");
+                        if (!privKeyStr) throw new Error("No private key found");
 
                         const myPrivateKey = await cryptoUtils.importKey(privKeyStr, "private");
-
-                        // 2. Giải mã nội dung
                         displayContent = await cryptoUtils.decryptMessage(
                             message.content,
                             message.encrypted_aes_key!,
                             message.iv!,
                             myPrivateKey
                         );
+                    } else {
+                        // Bổ sung sau, ở đây sẽ giải quyết vấn đề nhiều thiết bị sử dụng
+                        return;
                     }
 
-                    const decryptedMessage = { ...message, content: displayContent };
+                    const finalMessage = { ...message, content: displayContent };
 
-                    // 3. Cập nhật vào State
-                    get().updateLastMessage(decryptedMessage);
+                    get().updateLastMessage(finalMessage);
+
                     set((state) => {
-                        const currentMessages = state.messages[conversationId] || [];
-                        if (currentMessages.some(m => m.id === message.id)) {
-                            return state;
-                        }
+                        const messagesInConvo = state.messages[conversationId] || [];
                         return {
                             messages: {
                                 ...state.messages,
-                                [conversationId]: [...currentMessages, decryptedMessage]
+                                [conversationId]: [...messagesInConvo, finalMessage]
                             }
                         };
                     });
                 } catch (err) {
-                    console.error("Lỗi giải mã tin nhắn đến:", err);
-                    // Nếu lỗi, vẫn hiển thị tin nhắn nhưng ghi chú là không thể giải mã
-                    const errorMessage = { ...message, content: "[Tin nhắn mã hóa - Không thể giải mã]" };
-                    set((state) => ({
-                        messages: {
-                            ...state.messages,
-                            [conversationId]: [...(state.messages[conversationId] || []), errorMessage]
-                        }
-                    }));
+                    console.error("Lỗi xử lý tin nhắn đến:", err);
                 }
             },
             updateLastMessage: (message: Message) => {

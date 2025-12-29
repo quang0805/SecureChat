@@ -19,9 +19,14 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
     (response) => response,
     (error) => {
-        if (error.response?.status === 401) {
-            useAuthStore.getState().clearState();
-            window.location.href = '/signin';
+        const { status, config } = error.response || {};
+
+        if (status === 401) {
+            const isLoginRequest = config.url.includes('/signin');
+            if (!isLoginRequest) {
+                useAuthStore.getState().clearState();
+                window.location.href = '/signin';
+            }
         }
         return Promise.reject(error);
     }

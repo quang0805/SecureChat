@@ -96,5 +96,67 @@ export const cryptoUtils = {
         );
 
         return new TextDecoder().decode(decrypted);
+    },
+
+    // 6. Hàm tạo Master Key từ mật khẩu (PBKDF2)
+    deriveMasterKey: async (password: string, salt: string) => {
+        const encoder = new TextEncoder();
+        const passwordKey = await window.crypto.subtle.importKey(
+            "raw",
+            encoder.encode(password),
+            { name: "PBKDF2" },
+            false,
+            ["deriveKey"]
+        );
+
+        return await window.crypto.subtle.deriveKey(
+            {
+                name: "PBKDF2",
+                salt: encoder.encode(salt), // Dùng username làm salt
+                iterations: 100000,
+                hash: "SHA-256",
+            },
+            passwordKey,
+            { name: "AES-GCM", length: 256 },
+            true,
+            ["encrypt", "decrypt"]
+        );
+    },
+
+    // 7. Wrap Private Key (Mã hóa Private Key bằng Master Key)
+    wrapPrivateKey: async (privateKey: CryptoKey, masterKey: CryptoKey) => {
+        const exportedPrivKey = await window.crypto.subtle.exportKey("pkcs8", privateKey);
+        const iv = window.crypto.getRandomValues(new Uint8Array(12));
+        const encryptedPrivKey = await window.crypto.subtle.encrypt(
+            { name: "AES-GCM", iv },
+            masterKey,
+            exportedPrivKey
+        );
+
+        // Trả về chuỗi gồm IV + Ciphertext để lưu lên DB
+        return {
+            wrappedKey: btoa(String.fromCharCode(...new Uint8Array(encryptedPrivKey))),
+            iv: btoa(String.fromCharCode(...new Uint8Array(iv)))
+        };
+    },
+
+    // 8. Unwrap Private Key (Giải mã lấy lại Private Key)
+    unwrapPrivateKey: async (wrappedKeyStr: string, ivStr: string, masterKey: CryptoKey) => {
+        const encryptedPrivKey = Uint8Array.from(atob(wrappedKeyStr), c => c.charCodeAt(0));
+        const iv = Uint8Array.from(atob(ivStr), c => c.charCodeAt(0));
+
+        const decryptedPrivKey = await window.crypto.subtle.decrypt(
+            { name: "AES-GCM", iv },
+            masterKey,
+            encryptedPrivKey
+        );
+
+        return await window.crypto.subtle.importKey(
+            "pkcs8",
+            decryptedPrivKey,
+            { name: "RSA-OAEP", hash: "SHA-256" },
+            true,
+            ["decrypt"]
+        );
     }
 };

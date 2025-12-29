@@ -27,11 +27,14 @@ export const useAuthStore = create<AuthState>()(
                     // 1. Tạo cặp khóa E2EE
                     const keyPair = await cryptoUtils.generateKeyPair();
                     const pubKeyStr = await cryptoUtils.exportKey(keyPair.publicKey);
-                    const privKeyStr = await cryptoUtils.exportKey(keyPair.privateKey);
-                    // 2. Gửi kèm Public Key lên Server
-                    const res = await authService.signUp(username, password, firstName, lastName, pubKeyStr, privKeyStr);
-                    // 3. Lưu Private key vào LocalStorage (hoặc IndexedDB) để dùng sau này
-                    localStorage.setItem(`priv_key_${username}`, privKeyStr);
+                    // 2. Mã hóa Private Key bằng mật khẩu (Key Wrapping)
+                    const masterKey = await cryptoUtils.deriveMasterKey(password, username);
+                    const { wrappedKey, iv } = await cryptoUtils.wrapPrivateKey(keyPair.privateKey, masterKey);
+                    const finalEncryptedPrivKey = `${iv}:${wrappedKey}`;
+                    // 3. Gửi kèm Public Key lên Server
+                    const res = await authService.signUp(username, password, firstName, lastName, pubKeyStr, finalEncryptedPrivKey);
+                    // 4. Lưu Private key vào LocalStorage (hoặc IndexedDB) để dùng sau này
+                    localStorage.setItem(`priv_key_${username}`, finalEncryptedPrivKey);
                     console.log(res.data);
                     toast.success("Đăng ký thành công!");
                 } catch (error) {
@@ -52,13 +55,30 @@ export const useAuthStore = create<AuthState>()(
 
                     // Lưu token vào state
                     set({ accessToken: access_token })
-                    await get().fetchMe()
-                    useChatStore.getState().fetchConversation()
+                    const user = await authService.fetchMe();
+
+                    if (user.encrypted_private_key) {
+                        // 2. Tách IV và Ciphertext
+                        const [ivStr, wrappedKeyStr] = user.encrypted_private_key.split(":");
+
+                        // 3. Dùng mật khẩu vừa nhập để tái tạo Master Key
+                        const masterKey = await cryptoUtils.deriveMasterKey(password, username);
+
+                        // 4. Giải mã lấy lại Private Key RSA chuẩn
+                        const privateKey = await cryptoUtils.unwrapPrivateKey(wrappedKeyStr, ivStr, masterKey);
+
+                        // 5. Xuất ra PEM để lưu vào LocalStorage (Bây giờ xóa đi vẫn lấy lại được từ DB)
+                        const privKeyRaw = await cryptoUtils.exportKey(privateKey);
+                        localStorage.setItem(`priv_key_${username}`, privKeyRaw);
+                    }
+
+                    useChatStore.getState().fetchConversation();
+                    toast.success("Đăng nhập và khôi phục khóa thành công!");
 
                     toast.success("Đăng nhập thành công!")
                 } catch (error) {
-                    console.error(error)
-                    toast.error("Đăng nhập thất bại!")
+                    console.error(error);
+                    toast.error("Đăng nhập thất bại!");
                     throw error
                 } finally {
                     set({ loading: false })
