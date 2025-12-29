@@ -39,7 +39,7 @@ export const cryptoUtils = {
 
     // 4. Mã hóa tin nhắn (Hybrid Encryption)
     encryptMessage: async (plaintext: string, recipientPublicKeyStr: string) => {
-        // Tạo khóa AES tạm thời
+        // Tạo khóa AES mã hóa tin nhắn.
         const aesKey = await window.crypto.subtle.generateKey(
             { name: ALGO_AES, length: 256 },
             true,
@@ -55,6 +55,10 @@ export const cryptoUtils = {
             encodedText
         );
 
+        // Xuất AES ra dạng Raw
+        const aesKeyRaw = await window.crypto.subtle.exportKey("raw", aesKey);
+
+
         // Mã hóa khóa AES bằng RSA Public Key của người nhận
         const recipientPubKey = await cryptoUtils.importKey(recipientPublicKeyStr, "public");
         const exportedAesKey = await window.crypto.subtle.exportKey("raw", aesKey);
@@ -67,10 +71,18 @@ export const cryptoUtils = {
         return {
             ciphertext: btoa(String.fromCharCode(...new Uint8Array(encryptedContent))),
             encryptedAesKey: btoa(String.fromCharCode(...new Uint8Array(encryptedAesKey))),
-            iv: btoa(String.fromCharCode(...new Uint8Array(iv)))
+            iv: btoa(String.fromCharCode(...new Uint8Array(iv))),
+            aesKeyRaw: aesKeyRaw
         };
     },
-
+    // HELPER - mã hóa khóa AES bằng public key của mình. 
+    encryptAesKeyForMe: async (aesKeyRaw: ArrayBuffer, myPublicKeyStr: string) => {
+        const myPubKey = await cryptoUtils.importKey(myPublicKeyStr, "public");
+        const encrypted = await window.crypto.subtle.encrypt(
+            { name: "RSA-OAEP" }, myPubKey, aesKeyRaw
+        );
+        return btoa(String.fromCharCode(...new Uint8Array(encrypted)));
+    },
     // 5. Giải mã tin nhắn
     decryptMessage: async (ciphertext: string, encryptedAesKey: string, iv: string, myPrivateKey: CryptoKey) => {
         // Giải mã khóa AES bằng RSA Private Key của mình

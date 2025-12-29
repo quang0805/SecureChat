@@ -29,21 +29,19 @@ async def create_message(db: Session, message_data: MessageCreate, conversation_
         content_type=message_data.content_type,
         # Lưu các trường E2EE phục vụ giải mã
         encrypted_aes_key=message_data.encrypted_aes_key,
+        encrypted_aes_key_sender=message_data.encrypted_aes_key_sender,
         iv=message_data.iv
     )
     db.add(db_message)
     db.commit()
     db.refresh(db_message)
 
-    # 3. Lấy thông tin người gửi để map vào schema (để hiển thị display_name, avatar...)
     db_message.sender = user_service.get_user(db, sender_id)
 
     # 4. Chuyển đổi sang Schema để chuẩn hóa dữ liệu gửi đi (vừa để trả về API, vừa để gửi Socket)
-    # model_validate sẽ tự động xử lý các trường UUID, datetime thành string
     message_output = MessageSchema.model_validate(db_message)
 
     # 5. Lấy danh sách tất cả các người tham gia trong cuộc hội thoại
-    # Lưu ý: Nên gửi cho cả chính mình (sender) để đồng bộ giữa các tab/thiết bị khác nhau của cùng 1 user
     participants = db.query(Participant.user_id).filter(
         Participant.conversation_id == conversation_id
     ).all()
@@ -52,7 +50,7 @@ async def create_message(db: Session, message_data: MessageCreate, conversation_
     # 6. Chuẩn bị dữ liệu để broadcast qua WebSocket
     broadcast_data = {
         "type": "new_message",
-        "payload": message_output.model_dump(mode='json') # mode='json' giúp format datetime/uuid chuẩn
+        "payload": message_output.model_dump(mode='json') 
     }
     # 7. Gửi dữ liệu tới những người tham gia
     await manager.broadcast(broadcast_data, participant_ids)

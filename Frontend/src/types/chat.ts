@@ -53,6 +53,7 @@ export interface Message {
     id: string;
     content: string;
     encrypted_aes_key: string | null;
+    encrypted_aes_key_sender: string | null;
     iv: string | null;
     content_type: string;
     conversation_id: string;
