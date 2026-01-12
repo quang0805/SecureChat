@@ -16,18 +16,14 @@ const MessageItem = ({ message, index, messages, selectedConvo, lastMessageStatu
 
     const user = useAuthStore((s) => s.user)
     const isOwn = user?.id === message.sender_id ? true : false
-    const nextMsg = messages[index + 1];
-    // const prev = messages[index - 1];
-    const isGroupBreak = !nextMsg ||
-        message.sender_id !== nextMsg?.sender_id ||
-        new Date(nextMsg?.created_at).getTime() -
-        new Date(message.created_at || 0).getTime() > 300000;
+    // const nextMsg = messages[index + 1];
+    const prev = messages[index - 1];
+    let isGroupBreak = (!prev) ||
+        message.sender_id !== prev?.sender_id ||
+        (new Date(prev.created_at).getTime() - new Date(message?.created_at).getTime()) > 30000000;
 
-
-    // new Date(message.created_at).getTime() -
-    // new Date(prev?.created_at || 0).getTime() > 300000
+    // isGroupBreak = false;
     const participant = selectedConvo.participants.find((p) => p.id === message.sender_id)
-    // const participant = message.sender
     return (
         <div
             className={cn(

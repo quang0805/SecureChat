@@ -13,6 +13,7 @@ const ChatWindowBody = () => {
     useEffect(() => {
         if (activeConversationId) {
             fetchMessages(activeConversationId);
+
         }
     }, [activeConversationId])
 
@@ -20,6 +21,11 @@ const ChatWindowBody = () => {
         if (!activeConversationId) return [];
         return allMessages[activeConversationId] ?? [];
     }, [allMessages, activeConversationId]);
+    useEffect(() => {
+        for (const message of messages) {
+            console.log(`Message content: ${message.content}`);
+        }
+    }, []);
 
     const selectedConvo = conversations.find((c) => c.id == activeConversationId);
     const reversedMessages = useMemo(() => [...messages].reverse(), [messages]);
@@ -37,7 +43,7 @@ const ChatWindowBody = () => {
                         key={message.id}
                         message={message}
                         index={index}
-                        messages={messages}
+                        messages={reversedMessages}
                         selectedConvo={selectedConvo}
                         lastMessageStatus="seen"
                     />

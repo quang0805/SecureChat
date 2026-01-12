@@ -9,7 +9,7 @@ export const chatService = {
         return res.data;
     },
 
-    async fetchMessages(conversation_id: string, skip = 0, limit = 50): Promise<Message[]> {
+    async fetchMessages(conversation_id: string, skip = 0, limit = 100): Promise<Message[]> {
         const res = await api.get(`/conversations/${conversation_id}/messages`,
             {
                 params: {
