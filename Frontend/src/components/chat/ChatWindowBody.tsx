@@ -21,11 +21,6 @@ const ChatWindowBody = () => {
         if (!activeConversationId) return [];
         return allMessages[activeConversationId] ?? [];
     }, [allMessages, activeConversationId]);
-    useEffect(() => {
-        for (const message of messages) {
-            console.log(`Message content: ${message.content}`);
-        }
-    }, []);
 
     const selectedConvo = conversations.find((c) => c.id == activeConversationId);
     const reversedMessages = useMemo(() => [...messages].reverse(), [messages]);

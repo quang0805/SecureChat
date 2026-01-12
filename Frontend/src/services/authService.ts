@@ -30,19 +30,20 @@ export const authService = {
             {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                withCredentials: true
+                }
             }
         )
         return res.data
     },
     fetchMe: async () => {
         const res = await api.get(
-            "/users/me",
-            {
-                withCredentials: true
-            }
+            "/users/me"
         )
         return res.data
+
+    },
+    updateDisplayName: async (newName: string) => {
+        const res = await api.patch(`/users/me?display_name=${newName}`);
+        return res.data;
     }
 }

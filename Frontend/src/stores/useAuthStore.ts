@@ -81,25 +81,38 @@ export const useAuthStore = create<AuthState>()(
                     toast.error("Đăng nhập thất bại!");
                     throw error
                 } finally {
-                    set({ loading: false })
+                    set({ loading: false });
                 }
             },
 
             logOut: () => {
-                get().clearState()
+                get().clearState();
             },
 
             fetchMe: async () => {
                 try {
-                    set({ loading: true })
-                    const user = await authService.fetchMe()
-                    set({ user })
+                    set({ loading: true });
+                    const user = await authService.fetchMe();
+                    set({ user });
                 } catch (error) {
-                    console.error(error)
-                    toast.error("Phiên đăng nhập hết hạn hoặc lỗi hệ thống")
-                    get().clearState()
+                    console.error(error);
+                    toast.error("Phiên đăng nhập hết hạn hoặc lỗi hệ thống");
+                    get().clearState();
                 } finally {
-                    set({ loading: false })
+                    set({ loading: false });
+                }
+            },
+            updateDisplayName: async (newName: string) => {
+                try {
+                    set({ loading: true });
+                    const user = await authService.updateDisplayName(newName);
+                    set({ user });
+                    toast.success("Cập nhật Diplayname thành công!");
+                } catch (error) {
+                    console.error(error);
+                    toast.error("Không thể cập nhật tên!");
+                } finally {
+                    set({ loading: false });
                 }
             }
         }),

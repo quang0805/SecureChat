@@ -30,12 +30,30 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+
 import type { User } from "@/types/user"
 import Logout from "../auth/Logout"
-import { useThemeStore } from "@/stores/useThemeStore"
+import { useAuthStore } from "@/stores/useAuthStore";
+import { useState } from "react";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+
 export function NavUser(
+
   { user }: { user: User }) {
   const { isMobile } = useSidebar()
+  const { updateDisplayName } = useAuthStore();
+  const [open, setOpen] = useState(false);
+  const [tempName, setTempName] = useState(user?.display_name || "");
+
+  const handleUpdate = async () => {
+    if (tempName.trim()) {
+      await updateDisplayName(tempName);
+      setOpen(false); // Đóng modal sau khi cập nhật xong
+    }
+  };
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -83,22 +101,52 @@ export function NavUser(
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <UserIcon
-                  className="text-muted-foreground
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DropdownMenuGroup>
+                <DialogTrigger asChild>
+                  <DropdownMenuItem
+                    onSelect={(e) => e.preventDefault()}
+                    className="cursor-pointer"
+                  >
+                    <UserIcon
+                      className="text-muted-foreground
                   dark:group-focus:!text-accent-foreground"
-                />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Bell
-                  className="text-muted-foreground
+                    />
+                    Change display name
+                  </DropdownMenuItem>
+                </DialogTrigger>
+                <DropdownMenuItem>
+                  <Bell
+                    className="text-muted-foreground
                   dark:group-focus:!text-accent-foreground"
-                />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
+                  />
+                  Notifications
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Change display name</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">New display name</label>
+                    <Input
+                      value={tempName}
+                      onChange={(e) => setTempName(e.target.value)}
+                      placeholder="Enter new display name..."
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleUpdate}>
+                    Save changes
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="cursor-pointer"

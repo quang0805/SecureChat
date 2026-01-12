@@ -29,3 +29,15 @@ def get_user_online(user: User = Depends(get_current_user)):
             users_online.append(userId)
     
     return users_online
+
+@router.patch("/me", response_model=user_schema.User)
+def update_user_profile(
+        display_name: str,
+        db:Session = Depends(get_db),
+        current_user: User = Depends(get_current_user)
+):
+    current_user.display_name = display_name
+    db.commit()
+    db.refresh(current_user)
+    return current_user
+ 

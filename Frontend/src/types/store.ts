@@ -19,6 +19,7 @@ export interface AuthState {
     ) => Promise<void>;
     logOut: () => void;
     fetchMe: () => Promise<void>
+    updateDisplayName: (newName: string) => Promise<void>
 }
 
 

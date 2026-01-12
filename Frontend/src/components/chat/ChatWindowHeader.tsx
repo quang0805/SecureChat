@@ -25,9 +25,7 @@ const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
         otherUser = otherUsers.length > 0 ? otherUsers[0] : null
         if (!chat || !otherUser) return;
     }
-
     const isOnline = onlineUserIds.includes(otherUsers[0].id)
-
 
     return (
         <header
