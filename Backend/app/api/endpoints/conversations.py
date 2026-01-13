@@ -12,7 +12,7 @@ from app.services import conversation_service, message_service, user_service
 router = APIRouter()
 
 @router.post("/", response_model=conversation_schema.Conversation, status_code=status.HTTP_201_CREATED)
-def create_new_conversation(
+async def create_new_conversation(
     conversation_in: conversation_schema.ConversationCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -23,7 +23,8 @@ def create_new_conversation(
     - **participant_ids**: Danh sách ID của những người tham gia (không cần bao gồm người tạo).
     - **name**: Bắt buộc cho group chat.
     """
-    conversation = conversation_service.create_conversation(db, conversation_data=conversation_in, creator_id=current_user.id)
+    print(">>> CALL FROM app.api.endpoints.conversation.py.create_new_conversation")
+    conversation = await conversation_service.create_conversation(db, conversation_data=conversation_in, creator_id=current_user.id)
     # Lấy thông tin chi tiết của các participant để trả về
     participants = db.query(User).filter(User.id.in_(conversation_in.participant_ids + [current_user.id])).all()
     conversation.participants = participants
@@ -46,7 +47,6 @@ def get_my_conversations(
             Message.conversation_id == conv.id
         ).order_by(Message.created_at.desc()).first()
         conv.last_message = last_msg
-
     return conversations
 
 @router.get("/{conversation_id}/messages", response_model=List[message_schema.Message])
@@ -79,7 +79,8 @@ async def send_new_message(
     """
     Gửi một tin nhắn mới vào cuộc hội thoại.
     """
-    # Kiểm tra conversation có tồn tại và user có quyền hay không. 
+    # Kiểm tra conversation có tồn tại và user có quyền hay không.
+    print(">>> CALL from app.api.endpoints.conversations.py/send_new_message") 
     conversation = conversation_service.get_conversation_by_id(db, conversation_id, user_id=current_user.id)
     if not conversation:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found or you don't have access")

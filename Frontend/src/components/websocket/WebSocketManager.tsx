@@ -7,7 +7,7 @@ import useWebSocket from 'react-use-websocket';
 
 const WebSocketManager = () => {
     const { accessToken } = useAuthStore();
-    const { handleIncomingMessage, handleUserStatusChange } = useChatStore();
+    const { handleIncomingMessage, handleUserStatusChange, handleIncomingNewConversation } = useChatStore();
 
     const socketUrl = accessToken ? `ws://localhost:8000/ws/${accessToken}` : null;
 
@@ -28,14 +28,14 @@ const WebSocketManager = () => {
             try {
                 const data = JSON.parse(lastMessage.data);
 
-                if (data.type === 'new_message' && data.payload) { // Kieemr tra cấu trúc backend trả về.
-                    console.log(`Message - WebsocketManager: ${data.payload}`)
+                if (data.type === 'new_message' && data.payload) {
                     handleIncomingMessage(data.payload);
-                    console.log("Tin nhắn nhận được:", data.payload);
                 } else if (data.type === "user_status_change" && data.payload) {
                     const { user_id, status } = data.payload;
-                    console.log("messsage received:", data.payload)
                     handleUserStatusChange(user_id, status);
+                } else if (data.type === "new_conversation" && data.payload) {
+                    console.log(`Conversation create: ${data.payload.type}`)
+                    handleIncomingNewConversation(data.payload);
                 }
             } catch (err) {
                 console.error("Lỗi parse tin nhắn:", err);

@@ -46,10 +46,12 @@ export interface ChatState {
     fetchMessages: (id: string) => Promise<void>
     sendMessage: (conversationId: string, content: string) => Promise<void>
     handleIncomingMessage: (message: Message) => void
+    handleIncomingNewConversation: (newConvo: Conversation) => void
+    handleUserStatusChange: (userId: string, status: 'online' | 'offline') => void
     updateLastMessage: (message: Message) => void
     setOnlineUsers: (ids: string[]) => void
-    handleUserStatusChange: (userId: string, status: 'online' | 'offline') => void
     fetchUsersOnline: () => Promise<void>
     searchUsers: (query: string) => Promise<User[]>
     startConversation: (targetUser: User) => Promise<void>
+
 }

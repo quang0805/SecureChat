@@ -43,9 +43,15 @@ export const chatService = {
         return res.data;
     },
 
-    searchUsers: async (query: string) => {
+    async searchUsers(query: string) {
         if (!query.trim()) return [];
         const res = await api.get(`/users/search?q=${query}`); // Endpoint backend
         return res.data;
     },
+
+    async createConversation(payload: any) {
+        const res = await api.post(`/conversations`, payload);
+        return res.data
+    }
+
 }

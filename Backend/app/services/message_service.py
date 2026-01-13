@@ -9,7 +9,8 @@ from app.services import user_service
 
 
 async def create_message(db: Session, message_data: MessageCreate, conversation_id: uuid.UUID, sender_id: uuid.UUID):
-    # 1. Kiểm tra xem người gửi có phải là thành viên của cuộc hội thoại không
+    # Kiểm tra xem người gửi có phải là thành viên của cuộc hội thoại không
+    print(">>> CALL from app.services.message_service.py/create_message")
     is_participant = db.query(Participant).filter(
         Participant.conversation_id == conversation_id,
         Participant.user_id == sender_id
@@ -21,7 +22,7 @@ async def create_message(db: Session, message_data: MessageCreate, conversation_
             detail="You are not a member of this conversation"
         )
 
-    # 2. Tạo đối tượng tin nhắn và lưu vào Database
+    # Tạo đối tượng tin nhắn và lưu vào Database
     db_message = Message(
         conversation_id=conversation_id,
         sender_id=sender_id,
@@ -38,21 +39,21 @@ async def create_message(db: Session, message_data: MessageCreate, conversation_
 
     db_message.sender = user_service.get_user(db, sender_id)
 
-    # 4. Chuyển đổi sang Schema để chuẩn hóa dữ liệu gửi đi (vừa để trả về API, vừa để gửi Socket)
+    # Chuyển đổi sang Schema để chuẩn hóa dữ liệu gửi đi (vừa để trả về API, vừa để gửi Socket)
     message_output = MessageSchema.model_validate(db_message)
 
-    # 5. Lấy danh sách tất cả các người tham gia trong cuộc hội thoại
+    # Lấy danh sách tất cả các người tham gia trong cuộc hội thoại
     participants = db.query(Participant.user_id).filter(
         Participant.conversation_id == conversation_id
     ).all()
     participant_ids = [p.user_id for p in participants]
 
-    # 6. Chuẩn bị dữ liệu để broadcast qua WebSocket
+    # Chuẩn bị dữ liệu để broadcast qua WebSocket
     broadcast_data = {
         "type": "new_message",
         "payload": message_output.model_dump(mode='json') 
     }
-    # 7. Gửi dữ liệu tới những người tham gia
+    # Gửi dữ liệu tới những người tham gia
     await manager.broadcast(broadcast_data, participant_ids)
 
     return db_message

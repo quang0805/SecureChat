@@ -5,7 +5,7 @@ import { persist } from "zustand/middleware";
 import { chatService } from "@/services/chatService";
 import { toast } from "sonner";
 import { useAuthStore } from "./useAuthStore";
-import type { Message } from "@/types/chat";
+import type { Conversation, Message } from "@/types/chat";
 import { cryptoUtils } from "@/lib/cryptoUtils";
 import api from "@/lib/axios";
 import type { User } from "@/types/user";
@@ -337,35 +337,37 @@ export const useChatStore = create<ChatState>()(
                 }
             },
             startConversation: async (targetUser: User) => {
-                const conversations = get().conversations;
-                //Kiểm tra xem đã có hội thoại private với người này chưa
-                const existing = conversations.find(c =>
-                    c.type === 'private' &&
-                    c.participants.some(p => p.id === targetUser.id)
-                );
 
-                if (existing) {
-                    set({ activeConversationId: existing.id });
-                    return;
-                }
-
-                // Nếu chưa có, tạo hội thoại mới qua API
                 try {
-                    const res = await api.post("/conversations", {
-                        type: "private",
+                    const newConvo = await chatService.createConversation({
+                        type: 'private',
                         participant_ids: [targetUser.id]
                     });
 
-                    const newConvo = res.data;
-                    set((state) => ({
-                        conversations: [newConvo, ...state.conversations],
-                        activeConversationId: newConvo.id
-                    }));
+                    set((state) => {
+                        const isExisted = state.conversations.some(c => c.id === newConvo.id);
+                        if (isExisted) {
+                            return { activeConversationId: newConvo.id };
+                        }
+
+                        return {
+                            conversations: [newConvo, ...state.conversations],
+                            activeConversationId: newConvo.id
+                        };
+                    });
                 } catch (error) {
                     toast.error("Không thể bắt đầu cuộc trò chuyện");
                 }
 
-            }
+            },
+            handleIncomingNewConversation: (newConvo: Conversation) => {
+                set((state) => {
+                    if (state.conversations.some(c => c.id === newConvo.id)) return state;
+                    return {
+                        conversations: [newConvo, ...state.conversations]
+                    };
+                })
+            },
         }),
         {
             name: "chat-storage",
