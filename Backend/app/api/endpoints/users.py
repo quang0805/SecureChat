@@ -41,3 +41,7 @@ def update_user_profile(
     db.refresh(current_user)
     return current_user
  
+
+@router.get("/search")
+def search_users(q: str, db: Session = Depends(get_db)):
+    return db.query(User).filter(User.username.ilike(f"%{q}%")).limit(5).all()

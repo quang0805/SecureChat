@@ -50,4 +50,6 @@ export interface ChatState {
     setOnlineUsers: (ids: string[]) => void
     handleUserStatusChange: (userId: string, status: 'online' | 'offline') => void
     fetchUsersOnline: () => Promise<void>
+    searchUsers: (query: string) => Promise<User[]>
+    startConversation: (targetUser: User) => Promise<void>
 }

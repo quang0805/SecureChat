@@ -41,5 +41,11 @@ export const chatService = {
     async fetchUsersOnline() {
         const res = await api.get('/users/online');
         return res.data;
-    }
+    },
+
+    searchUsers: async (query: string) => {
+        if (!query.trim()) return [];
+        const res = await api.get(`/users/search?q=${query}`); // Endpoint backend
+        return res.data;
+    },
 }

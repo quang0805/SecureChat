@@ -7,12 +7,13 @@ import { useChatStore } from "@/stores/useChatStore"
 import { useEffect } from "react"
 const ChatAppPage = () => {
     const { fetchMe, accessToken } = useAuthStore();
-    const { fetchConversation, fetchUsersOnline } = useChatStore();
+    const { fetchConversation, fetchUsersOnline, searchUsers } = useChatStore();
 
     useEffect(() => {
         fetchMe();
         fetchConversation();
         fetchUsersOnline();
+
     }, [])
     return (
         <SidebarProvider>

@@ -7,6 +7,8 @@ import { toast } from "sonner";
 import { useAuthStore } from "./useAuthStore";
 import type { Message } from "@/types/chat";
 import { cryptoUtils } from "@/lib/cryptoUtils";
+import api from "@/lib/axios";
+import type { User } from "@/types/user";
 
 export const useChatStore = create<ChatState>()(
     persist(
@@ -324,9 +326,47 @@ export const useChatStore = create<ChatState>()(
                 } catch (error) {
                     console.log(error)
                 }
+            },
+            searchUsers: async (query: string) => {
+                try {
+                    const result = await chatService.searchUsers(query); // Endpoint backend
+                    return result;
+                } catch (error) {
+                    console.error("Search error", error);
+                    return [];
+                }
+            },
+            startConversation: async (targetUser: User) => {
+                const conversations = get().conversations;
+                //Kiểm tra xem đã có hội thoại private với người này chưa
+                const existing = conversations.find(c =>
+                    c.type === 'private' &&
+                    c.participants.some(p => p.id === targetUser.id)
+                );
+
+                if (existing) {
+                    set({ activeConversationId: existing.id });
+                    return;
+                }
+
+                // Nếu chưa có, tạo hội thoại mới qua API
+                try {
+                    const res = await api.post("/conversations", {
+                        type: "private",
+                        participant_ids: [targetUser.id]
+                    });
+
+                    const newConvo = res.data;
+                    set((state) => ({
+                        conversations: [newConvo, ...state.conversations],
+                        activeConversationId: newConvo.id
+                    }));
+                } catch (error) {
+                    toast.error("Không thể bắt đầu cuộc trò chuyện");
+                }
+
             }
         }),
-
         {
             name: "chat-storage",
             partialize: (state) => ({

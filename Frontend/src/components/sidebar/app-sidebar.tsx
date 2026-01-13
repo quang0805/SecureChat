@@ -22,6 +22,7 @@ import DirectMessageList from "../chat/DirectMessageList"
 import { useThemeStore } from "@/stores/useThemeStore"
 import { NavUser } from "./nav-user"
 import { useAuthStore } from "@/stores/useAuthStore"
+import { SidebarSearch } from "../chat/SideBarSearch"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const isDark = useThemeStore((s) => s.isDark)
@@ -58,6 +59,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+      <SidebarSearch />
       {/* Content */}
       <SidebarContent
         className="beautiful-scrollbar"

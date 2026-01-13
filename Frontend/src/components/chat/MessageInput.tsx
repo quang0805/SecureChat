@@ -1,5 +1,5 @@
 import { useAuthStore } from "@/stores/useAuthStore"
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useChatStore } from "@/stores/useChatStore";
@@ -41,7 +41,7 @@ const MessageInput = () => {
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder="Nhập tin nhắn"
-                className="pr-20 h-9 bg-white border-border/10 focus:border-primary/50 transition-smooth resize-none"
+                className="pr-20 h-9 bg-white border-[0.5px] border-border/40 focus:border-primary/10 focus:ring-0 transition-smooth resize-none outline-none"
                 ref={inputRef}
                 onKeyDown={e => handleKeyDown(e)}
             >

@@ -106,7 +106,7 @@ export function NavUser(
                 <DialogTrigger asChild>
                   <DropdownMenuItem
                     onSelect={(e) => e.preventDefault()}
-                    className="cursor-pointer"
+                    className="focus:bg-slate-200 focus:text-purple-900 cursor-pointer"
                   >
                     <UserIcon
                       className="text-muted-foreground
@@ -115,7 +115,8 @@ export function NavUser(
                     Change display name
                   </DropdownMenuItem>
                 </DialogTrigger>
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  className="focus:bg-slate-200 focus:text-purple-900 cursor-pointer">
                   <Bell
                     className="text-muted-foreground
                   dark:group-focus:!text-accent-foreground"
@@ -138,10 +139,13 @@ export function NavUser(
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setOpen(false)}>
+                  <Button variant="outline"
+                    onClick={() => setOpen(false)}>
                     Cancel
                   </Button>
-                  <Button onClick={handleUpdate}>
+                  <Button
+                    className="bg-purple-400"
+                    onClick={handleUpdate}>
                     Save changes
                   </Button>
                 </DialogFooter>
@@ -157,6 +161,6 @@ export function NavUser(
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
-    </SidebarMenu>
+    </SidebarMenu >
   )
 }
