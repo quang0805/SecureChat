@@ -178,7 +178,8 @@ export function NavUser(
               className="cursor-pointer"
               variant="destructive"
             >
-              <Logout />
+              <Logout
+              />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

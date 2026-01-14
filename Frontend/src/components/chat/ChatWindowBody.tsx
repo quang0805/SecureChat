@@ -1,6 +1,7 @@
 import { useChatStore } from "@/stores/useChatStore"
 import MessageItem from "./MessageItem";
 import { useEffect, useMemo, useRef } from "react";
+import EmptyMessageScreen from "./EmptyMessageScreen";
 
 const ChatWindowBody = () => {
     const activeConversationId = useChatStore((s) => s.activeConversationId);
@@ -26,9 +27,7 @@ const ChatWindowBody = () => {
     const reversedMessages = useMemo(() => [...messages].reverse(), [messages]);
     if (!selectedConvo) return;
     if (!messages?.length) {
-        return <div className="bg-chat-pattern flex h-full justify-center items-center text-muted-foreground">
-            Đoạn chat chưa có tin nhắn nào!
-        </div>
+        return <EmptyMessageScreen />
     }
     return (
         <div className="p-5 bg-chat-pattern h-full flex flex-col overflow-hidden">
