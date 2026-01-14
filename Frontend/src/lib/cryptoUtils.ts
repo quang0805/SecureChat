@@ -22,7 +22,7 @@ export const cryptoUtils = {
             key.type === "public" ? "spki" : "pkcs8",
             key
         );
-        return btoa(String.fromCharCode(...new Uint8Array(exported)));
+        return arrayBufferToBase64(exported);
     },
 
     // 3. Nhập khóa từ chuỗi
@@ -69,9 +69,9 @@ export const cryptoUtils = {
         );
 
         return {
-            ciphertext: btoa(String.fromCharCode(...new Uint8Array(encryptedContent))),
-            encryptedAesKey: btoa(String.fromCharCode(...new Uint8Array(encryptedAesKey))),
-            iv: btoa(String.fromCharCode(...new Uint8Array(iv))),
+            ciphertext: arrayBufferToBase64(encryptedContent),
+            encryptedAesKey: arrayBufferToBase64(encryptedAesKey),
+            iv: arrayBufferToBase64(iv.buffer),
             aesKeyRaw: aesKeyRaw
         };
     },
@@ -81,7 +81,7 @@ export const cryptoUtils = {
         const encrypted = await window.crypto.subtle.encrypt(
             { name: "RSA-OAEP" }, myPubKey, aesKeyRaw
         );
-        return btoa(String.fromCharCode(...new Uint8Array(encrypted)));
+        return arrayBufferToBase64(encrypted);
     },
     // 5. Giải mã tin nhắn
     decryptMessage: async (ciphertext: string, encryptedAesKey: string, iv: string, myPrivateKey: CryptoKey) => {
@@ -147,8 +147,8 @@ export const cryptoUtils = {
 
         // Trả về chuỗi gồm IV + Ciphertext để lưu lên DB
         return {
-            wrappedKey: btoa(String.fromCharCode(...new Uint8Array(encryptedPrivKey))),
-            iv: btoa(String.fromCharCode(...new Uint8Array(iv)))
+            wrappedKey: arrayBufferToBase64(encryptedPrivKey),
+            iv: arrayBufferToBase64(iv.buffer)
         };
     },
 
@@ -170,5 +170,15 @@ export const cryptoUtils = {
             true,
             ["decrypt"]
         );
+    },
+
+};
+// Hàm chuyển đổi ArrayBuffer sang Base64 một cách an toàn cho dữ liệu lớn
+const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
     }
+    return window.btoa(binary);
 };

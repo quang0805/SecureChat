@@ -3,7 +3,7 @@ import type { Conversation, Message } from "@/types/chat";
 import UserAvatar from "./UserAvatar";
 import { Card } from "../ui/card";
 import { useAuthStore } from "@/stores/useAuthStore";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 
 interface MessageItemProps {
@@ -61,7 +61,9 @@ const MessageItem = ({ message, index, messages, selectedConvo }: MessageItemPro
                 >
                     {message.content_type === "image" ? (
                         <Dialog>
-                            <DialogTrigger asChild>
+                            <DialogTrigger asChild
+                                className="!cursor-pointer"
+                            >
                                 {/* cursor-zoom-in để báo hiệu click sẽ phóng to, hover:scale-105 tạo cảm giác tương tác */}
                                 <div className="relative cursor-zoom-in group overflow-hidden rounded-lg">
                                     <img
@@ -75,6 +77,7 @@ const MessageItem = ({ message, index, messages, selectedConvo }: MessageItemPro
 
                             {/* NỘI DUNG ẢNH PHÓNG TO */}
                             <DialogContent className="max-w-none! w-[90vw] h-[90vh] p-0 border-none bg-transparent shadow-none flex justify-center items-center overflow-hidden cursor-zoom-out!">
+                                <DialogTitle className="sr-only">Ảnh đính kèm</DialogTitle>
                                 <img
                                     src={message.content}
                                     className="w-full h-full object-contain animate-in zoom-in-95 duration-300 "

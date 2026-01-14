@@ -2,8 +2,8 @@ import path from "path"
 import tailwindcss from "@tailwindcss/vite"
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import fs from 'fs';
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
@@ -12,6 +12,10 @@ export default defineConfig({
     },
   },
   server: {
-    allowedHosts: true, // tunnel
-  }
+    https: {
+      key: fs.readFileSync('./192.168.111.113+2-key.pem'),
+      cert: fs.readFileSync('./192.168.111.113+2.pem'),
+    },
+    host: '0.0.0.0',
+  },
 })

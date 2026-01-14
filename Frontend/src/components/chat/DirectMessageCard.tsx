@@ -8,7 +8,8 @@ import StatusBadge from './StatusBadge';
 const DirectMessageCard = ({ convo }: { convo: Conversation }) => {
     const user = useAuthStore((s) => s.user)
     const { activeConversationId, setActiveConversationId, onlineUserIds } = useChatStore()
-    const lastMessage = convo.last_message?.content ?? "";
+    const lastMessage = convo.last_message?.content_type === "text" ? convo.last_message?.content ?? "" :
+        convo.last_message?.content_type === "image" ? "Hình ảnh" : ""
     const handleSelectConversation = async (id: string) => {
         setActiveConversationId(id);
     }

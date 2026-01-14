@@ -351,6 +351,7 @@ export const useChatStore = create<ChatState>()(
                             activeConversationId: newConvo.id
                         };
                     });
+                    get().fetchMessages(get().activeConversationId!);
                 } catch (error) {
                     toast.error("Không thể bắt đầu cuộc trò chuyện");
                 }

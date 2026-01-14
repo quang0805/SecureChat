@@ -71,9 +71,11 @@ function DialogContent({
                bg-black/20 hover:bg-black/40 backdrop-blur-md 
                text-white/80 hover:text-white 
                transition-all duration-300 ease-in-out
-               hover:rotate-360 hover:scale-105 active:scale-95
+               hover:scale-105 active:scale-95
                focus:outline-none focus:ring-2 focus:ring-white/20
-               disabled:pointer-events-none group"
+               disabled:pointer-events-none group
+               cursor-pointer
+               "
           >
             <XIcon className="size-5 transition-transform group-active:scale-75" />
             <span className="sr-only">Close</span>

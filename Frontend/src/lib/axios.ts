@@ -2,7 +2,7 @@ import { useAuthStore } from "@/stores/useAuthStore"
 import axios from "axios"
 
 const api = axios.create({
-    baseURL: import.meta.env.MODE === "development" ? "http://localhost:8000/api/v1" : "/api/v1",
+    baseURL: import.meta.env.MODE === "development" ? "https://192.168.111.113:8000/api/v1" : "/api/v1",
     withCredentials: true
 })
 

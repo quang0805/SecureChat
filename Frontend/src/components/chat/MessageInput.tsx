@@ -41,7 +41,7 @@ const MessageInput = () => {
 
         // Kiểm tra dung lượng 
         if (file.size > 1 * 1024 * 1024) {
-            toast.error("Ảnh quá lớn, vui lòng chọn ảnh dưới 1MB");
+            toast.error(`Ảnh quá lớn, vui lòng chọn ảnh dưới 1MB ${file.size}`);
             return;
         }
 
