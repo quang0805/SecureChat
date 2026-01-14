@@ -12,10 +12,6 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { Moon, Sun, ShieldCheck } from "lucide-react"
 import { Switch } from "../ui/switch"
-import CreateNewChat from "../chat/CreateNewChat"
-import NewGroupChatModal from "../chat/NewGroupChatModal"
-import GroupChatList from "../chat/GroupChatList"
-import AddFriendModal from "../chat/AddFriendModal"
 import DirectMessageList from "../chat/DirectMessageList"
 import { useThemeStore } from "@/stores/useThemeStore"
 import { NavUser } from "./nav-user"

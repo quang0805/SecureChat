@@ -38,6 +38,7 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { ProfileSettings } from "../user/ProfileSettings";
 
 export function NavUser(
 
@@ -72,7 +73,7 @@ export function NavUser(
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user.display_name}</span>
-                <span className="truncate text-xs">{user.username}</span>
+                <span className="truncate text-xs">@{user.username}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -97,7 +98,7 @@ export function NavUser(
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.display_name}</span>
-                  <span className="truncate text-xs">{user.username}</span>
+                  <span className="truncate text-xs">@{user.username}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -109,7 +110,7 @@ export function NavUser(
                     className="focus:bg-primary/10 focus:text-primary cursor-pointer transition-colors rounded-lg gap-3"
                   >
                     <UserIcon className="size-4 text-muted-foreground group-focus:text-primary" />
-                    <span className="font-medium">Change display name</span>
+                    <span className="font-medium">Profile setting</span>
                   </DropdownMenuItem>
                 </DialogTrigger>
 
@@ -119,58 +120,8 @@ export function NavUser(
                 </DropdownMenuItem>
               </DropdownMenuGroup>
 
-              <DialogContent className="glass-strong border-border/50 sm:max-w-[420px] rounded-[2rem] p-0 overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
-
-                <div className="bg-gradient-to-r from-primary/10 via-transparent to-transparent p-6 pb-2">
-                  <DialogHeader>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="p-2 rounded-xl bg-primary/20">
-                        <UserIcon className="size-5 text-primary" />
-                      </div>
-                      <DialogTitle className="text-xl font-bold tracking-tight">
-                        Edit Profile
-                      </DialogTitle>
-                    </div>
-                    <DialogDescription className="text-muted-foreground/80 text-xs">
-                    </DialogDescription>
-                  </DialogHeader>
-                </div>
-
-                {/* Input Section */}
-                <div className="p-6 space-y-6">
-                  <div className="space-y-3">
-                    <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">
-                      New display name
-                    </label>
-                    <div className="relative group">
-                      <Input
-                        value={tempName}
-                        onChange={(e) => setTempName(e.target.value)}
-                        placeholder="Nhập tên hiển thị mới..."
-                        className="h-12 bg-muted/30 border-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-xl px-4 transition-all"
-                      />
-                      <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity" />
-                    </div>
-                  </div>
-                </div>
-
-                <DialogFooter className="p-6 pt-2 gap-3 sm:gap-0">
-                  <Button
-                    variant="ghost"
-                    onClick={() => setOpen(false)}
-                    className="cursor-pointer rounded-xl !hover:bg-muted font-semibold transition-all active:scale-95"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    className="cursor-pointer bg-gradient-primary shadow-soft hover:shadow-glow rounded-xl px-6 font-bold transition-all active:scale-95"
-                    onClick={handleUpdate}
-                  >
-                    Save Changes
-                  </Button>
-                </DialogFooter>
-
-                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+              <DialogContent className="max-w-none! w-[28vw] h-[80vh] backdrop-blur-xl bg-background/80 glass-strong border-border/50 sm:max-w-[420px] rounded-[2rem] p-0 overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                <ProfileSettings onClose={() => setOpen(false)} />
               </DialogContent>
             </Dialog>
             <DropdownMenuSeparator />

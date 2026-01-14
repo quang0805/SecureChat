@@ -13,17 +13,14 @@ const ChatWindowLayout = () => {
     if (!selectedConvo) {
         return <ChatWelcomeScreen />
     }
-    // if (messageLoading) {
-    //     return <ChatWindowSkeleton />
-    // }
     return (
         <div className="relative h-full w-full overflow-hidden">
             <AnimatePresence mode="wait">
                 {messageLoading ? (
-                    // Khi isLoading = true, Skeleton hiện ra
+                    // Khi isLoading = true, Skeleton
                     <ChatWindowSkeleton key="skeleton" />
                 ) : (
-                    // Khi isLoading = false, Chat Content hiện ra
+                    // Khi isLoading = false, ChatContent
                     <motion.div
                         key="chat-content"
                         initial={{ opacity: 0, y: 10 }}
@@ -31,7 +28,7 @@ const ChatWindowLayout = () => {
                         transition={{ duration: 0.5, delay: 0.1 }}
                         className="h-full w-full"
                     >
-                        {/* GIAO DIỆN CHAT THẬT CỦA BẠN */}
+                        {/* GIAO DIỆN CHAT */}
 
                         < SidebarInset
                             className="bg-gray-400 flex flex-col h-full overflow-hidden flex-1 rounded-sm shadow-md"
