@@ -17,6 +17,7 @@ const Logout = () => {
         <Button
             variant="completeGhost"
             onClick={handleLogout}
+            className='cursor-pointer'
         >
             <LucideLogOut className='text-destructive' />
             Log out

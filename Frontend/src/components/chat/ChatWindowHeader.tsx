@@ -35,7 +35,7 @@ const ChatWindowHeader = ({ chat }: { chat?: Conversation }) => {
         >
             <div className="flex items-center gap-1 w-full"
             >
-                <SidebarTrigger className="-ml-1 text-foreground hover:bg-primary/10" />
+                <SidebarTrigger className="-ml-1 text-foreground hover:bg-primary/10 cursor-pointer" />
                 <Separator
                     orientation="vertical"
                     className="mr-2 data-[orientation=vertical]:h-4"

@@ -95,7 +95,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Switch
                     checked={isDark}
                     onCheckedChange={toggleTheme}
-                    className="data-[state=checked]:bg-primary"
+                    className="data-[state=checked]:bg-primary cursor-pointer"
                   />
                 </div>
               </div>
@@ -109,23 +109,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent
         className="beautiful-scrollbar"
       >
-        {/* GroupChat */}
-        {/* <SidebarGroup>
-          <SidebarGroupLabel className="uppercase">
-            Nhóm chat
-          </SidebarGroupLabel>
-          <SidebarGroupAction title="Tạo nhóm" className="cursor-pointer">
-            <NewGroupChatModal />
-          </SidebarGroupAction>
-          <SidebarGroupContent>
-            <GroupChatList />
-          </SidebarGroupContent>
-        </SidebarGroup> */}
-        {/* Dirrect Message */}
+
+        {/* List Conversations */}
         <SidebarGroup>
-          {/* <SidebarGroupLabel className="uppercase">
-            Bạn bè
-          </SidebarGroupLabel> */}
           <SidebarGroupContent>
             <DirectMessageList />
           </SidebarGroupContent>
@@ -133,8 +119,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       </SidebarContent>
       {/* Footer */}
-      <SidebarFooter>
-        {user && <NavUser user={user} />}
+      <SidebarFooter
+      >
+        {user && <NavUser
+          user={user} />}
       </SidebarFooter>
     </Sidebar>
   )

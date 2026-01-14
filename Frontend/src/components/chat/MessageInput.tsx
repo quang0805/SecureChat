@@ -63,7 +63,7 @@ const MessageInput = () => {
             <Button
                 variant="ghost"
                 size="icon"
-                className="hover:bg-primary/10 transition-smooth"
+                className="hover:bg-primary/10 transition-smooth cursor-pointer"
                 onClick={() => fileInputRef.current?.click()}
             >
                 <Image />
