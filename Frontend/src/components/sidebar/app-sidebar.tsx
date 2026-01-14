@@ -59,20 +59,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+      {/* Sidebar Search */}
       <SidebarSearch />
       {/* Content */}
       <SidebarContent
         className="beautiful-scrollbar"
       >
-        {/* NewChat */}
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <CreateNewChat />
-          </SidebarGroupContent>
-        </SidebarGroup>
-
         {/* GroupChat */}
-        <SidebarGroup>
+        {/* <SidebarGroup>
           <SidebarGroupLabel className="uppercase">
             Nhóm chat
           </SidebarGroupLabel>
@@ -82,20 +76,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarGroupContent>
             <GroupChatList />
           </SidebarGroupContent>
-        </SidebarGroup>
+        </SidebarGroup> */}
         {/* Dirrect Message */}
         <SidebarGroup>
-          <SidebarGroupLabel className="uppercase">
+          {/* <SidebarGroupLabel className="uppercase">
             Bạn bè
-          </SidebarGroupLabel>
-          <SidebarGroupAction title="Kết Bạn" className="cursor-pointer">
-            <AddFriendModal />
-          </SidebarGroupAction>
+          </SidebarGroupLabel> */}
           <SidebarGroupContent>
             <DirectMessageList />
           </SidebarGroupContent>
         </SidebarGroup>
-
 
       </SidebarContent>
       {/* Footer */}

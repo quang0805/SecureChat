@@ -19,9 +19,9 @@ async def create_new_conversation(
 ):
     """
     Tạo một cuộc hội thoại mới.
-    - **type**: 'private' hoặc 'group'.
-    - **participant_ids**: Danh sách ID của những người tham gia (không cần bao gồm người tạo).
-    - **name**: Bắt buộc cho group chat.
+    - type: 'private' hoặc 'group'.
+    - participant_ids: Danh sách ID của những người tham gia (không cần bao gồm người tạo).
+    - name: Bắt buộc cho group chat.
     """
     print(">>> CALL FROM app.api.endpoints.conversation.py.create_new_conversation")
     conversation = await conversation_service.create_conversation(db, conversation_data=conversation_in, creator_id=current_user.id)

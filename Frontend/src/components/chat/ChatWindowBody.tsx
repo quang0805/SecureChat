@@ -40,7 +40,6 @@ const ChatWindowBody = () => {
                         index={index}
                         messages={reversedMessages}
                         selectedConvo={selectedConvo}
-                        lastMessageStatus="seen"
                     />
                 ))}
                 <div ref={messagesEndRef} />

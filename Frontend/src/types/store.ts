@@ -44,7 +44,7 @@ export interface ChatState {
     setActiveConversationId: (id: string | null) => void
     fetchConversation: () => Promise<void>
     fetchMessages: (id: string) => Promise<void>
-    sendMessage: (conversationId: string, content: string) => Promise<void>
+    sendMessage: (conversationId: string, content: string, contentType?: string) => Promise<void>
     handleIncomingMessage: (message: Message) => void
     handleIncomingNewConversation: (newConvo: Conversation) => void
     handleUserStatusChange: (userId: string, status: 'online' | 'offline') => void

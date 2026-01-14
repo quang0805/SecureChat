@@ -58,6 +58,5 @@ export interface Message {
     content_type: string;
     conversation_id: string;
     sender_id: string;
-    // sender: User;
     created_at: string;
 }

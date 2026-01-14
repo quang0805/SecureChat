@@ -1,8 +1,9 @@
 # app/services/message_service.py
 import uuid
 from sqlalchemy.orm import Session,joinedload
+from sqlalchemy import func
 from fastapi import HTTPException, status
-from app.models import Message, Participant
+from app.models import Message, Participant, Conversation
 from app.schemas.message import MessageCreate, Message as MessageSchema
 from app.core.websockets import manager
 from app.services import user_service
@@ -34,6 +35,10 @@ async def create_message(db: Session, message_data: MessageCreate, conversation_
         iv=message_data.iv
     )
     db.add(db_message)
+
+    db.query(Conversation).filter(Conversation.id == conversation_id).update({
+        "updated_at": func.now() 
+    })
     db.commit()
     db.refresh(db_message)
 

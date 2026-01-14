@@ -32,7 +32,6 @@ export const useChatStore = create<ChatState>()(
                     loading: false
                 })
             },
-            // CẦN TỐI ƯU LOGIC DECRYPT MESSAGE GIỮA CÁC HÀM : 29-12-2025
             fetchConversation: async () => {
                 try {
                     set({ loading: true });
@@ -162,7 +161,7 @@ export const useChatStore = create<ChatState>()(
                     set({ messageLoading: false })
                 }
             },
-            sendMessage: async (conversationId, content) => {
+            sendMessage: async (conversationId, content, contentType = "text") => {
                 const currentUser = useAuthStore.getState().user
                 if (!currentUser) return;
                 // 1. Tìm thông tin người nhận để lấy Public Key
@@ -178,7 +177,7 @@ export const useChatStore = create<ChatState>()(
                 const optimisticMessage = {
                     id: tempId,
                     content: content,
-                    content_type: 'text',
+                    content_type: contentType,
                     conversation_id: conversationId,
                     sender_id: currentUser!.id,
                     sender: currentUser!,
@@ -210,7 +209,7 @@ export const useChatStore = create<ChatState>()(
                         encrypted_aes_key: encryptedData.encryptedAesKey,
                         encrypted_aes_key_sender: encryptedAesKeySender,
                         iv: encryptedData.iv,
-                        content_type: "text"
+                        content_type: contentType
                     };
 
 
@@ -237,7 +236,7 @@ export const useChatStore = create<ChatState>()(
                 const currentUser = useAuthStore.getState().user;
                 const conversationId = message.conversation_id;
 
-                // 1. Kiểm tra trùng lặp (nếu tin nhắn ID này đã có trong store thì bỏ qua luôn)
+                // Kiểm tra trùng lặp (nếu tin nhắn ID này đã có trong store thì bỏ qua luôn)
                 const currentMessages = get().messages[conversationId] || [];
                 if (currentMessages.some(m => m.id === message.id)) {
                     return;
@@ -246,7 +245,7 @@ export const useChatStore = create<ChatState>()(
                 try {
                     let displayContent = message.content;
 
-                    // 2. Nếu là tin nhắn của người khác gửi đến -> PHẢI GIẢI MÃ
+                    // Nếu là tin nhắn của người khác gửi đến -> PHẢI GIẢI MÃ
                     if (message.sender_id !== currentUser?.id) {
                         const privKeyStr = localStorage.getItem(`priv_key_${currentUser?.username}`);
                         if (!privKeyStr) throw new Error("No private key found");
@@ -262,11 +261,8 @@ export const useChatStore = create<ChatState>()(
                         // Bổ sung sau, ở đây sẽ giải quyết vấn đề nhiều thiết bị sử dụng
                         return;
                     }
-
                     const finalMessage = { ...message, content: displayContent };
-
                     get().updateLastMessage(finalMessage);
-
                     set((state) => {
                         const messagesInConvo = state.messages[conversationId] || [];
                         return {

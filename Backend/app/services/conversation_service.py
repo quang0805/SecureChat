@@ -90,7 +90,7 @@ async def create_conversation(db: Session, conversation_data: ConversationCreate
 
 
 def get_user_conversations(db: Session, user_id: uuid.UUID):
-    conversations = db.query(Conversation).join(Participant).filter(Participant.user_id == user_id).all()
+    conversations = db.query(Conversation).join(Participant).filter(Participant.user_id == user_id).order_by(Conversation.updated_at.desc()).all()
     return conversations
 
 
