@@ -30,7 +30,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 
 import type { User } from "@/types/user"
 import Logout from "../auth/Logout"
@@ -106,49 +106,71 @@ export function NavUser(
                 <DialogTrigger asChild>
                   <DropdownMenuItem
                     onSelect={(e) => e.preventDefault()}
-                    className="focus:bg-slate-200 focus:text-purple-900 cursor-pointer"
+                    className="focus:bg-primary/10 focus:text-primary cursor-pointer transition-colors rounded-lg gap-3"
                   >
-                    <UserIcon
-                      className="text-muted-foreground
-                  dark:group-focus:!text-accent-foreground"
-                    />
-                    Change display name
+                    <UserIcon className="size-4 text-muted-foreground group-focus:text-primary" />
+                    <span className="font-medium">Change display name</span>
                   </DropdownMenuItem>
                 </DialogTrigger>
-                <DropdownMenuItem
-                  className="focus:bg-slate-200 focus:text-purple-900 cursor-pointer">
-                  <Bell
-                    className="text-muted-foreground
-                  dark:group-focus:!text-accent-foreground"
-                  />
-                  Notifications
+
+                <DropdownMenuItem className="focus:bg-primary/10 focus:text-primary cursor-pointer transition-colors rounded-lg gap-3">
+                  <Bell className="size-4 text-muted-foreground group-focus:text-primary" />
+                  <span className="font-medium">Notifications</span>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Change display name</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">New display name</label>
-                    <Input
-                      value={tempName}
-                      onChange={(e) => setTempName(e.target.value)}
-                      placeholder="Enter new display name..."
-                    />
+
+              <DialogContent className="glass-strong border-border/50 sm:max-w-[420px] rounded-[2rem] p-0 overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+
+                <div className="bg-gradient-to-r from-primary/10 via-transparent to-transparent p-6 pb-2">
+                  <DialogHeader>
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="p-2 rounded-xl bg-primary/20">
+                        <UserIcon className="size-5 text-primary" />
+                      </div>
+                      <DialogTitle className="text-xl font-bold tracking-tight">
+                        Edit Profile
+                      </DialogTitle>
+                    </div>
+                    <DialogDescription className="text-muted-foreground/80 text-xs">
+                    </DialogDescription>
+                  </DialogHeader>
+                </div>
+
+                {/* Input Section */}
+                <div className="p-6 space-y-6">
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground ml-1">
+                      New display name
+                    </label>
+                    <div className="relative group">
+                      <Input
+                        value={tempName}
+                        onChange={(e) => setTempName(e.target.value)}
+                        placeholder="Nhập tên hiển thị mới..."
+                        className="h-12 bg-muted/30 border-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded-xl px-4 transition-all"
+                      />
+                      <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity" />
+                    </div>
                   </div>
                 </div>
-                <DialogFooter>
-                  <Button variant="outline"
-                    onClick={() => setOpen(false)}>
+
+                <DialogFooter className="p-6 pt-2 gap-3 sm:gap-0">
+                  <Button
+                    variant="ghost"
+                    onClick={() => setOpen(false)}
+                    className="cursor-pointer rounded-xl !hover:bg-muted font-semibold transition-all active:scale-95"
+                  >
                     Cancel
                   </Button>
                   <Button
-                    className="bg-purple-400"
-                    onClick={handleUpdate}>
-                    Save changes
+                    className="cursor-pointer bg-gradient-primary shadow-soft hover:shadow-glow rounded-xl px-6 font-bold transition-all active:scale-95"
+                    onClick={handleUpdate}
+                  >
+                    Save Changes
                   </Button>
                 </DialogFooter>
+
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
               </DialogContent>
             </Dialog>
             <DropdownMenuSeparator />

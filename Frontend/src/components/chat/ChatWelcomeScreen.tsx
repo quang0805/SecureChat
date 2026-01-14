@@ -14,7 +14,7 @@ const ChatWelcomeScreen = () => {
                 />
             </div>
 
-            {/* 2. Central Animated Logo */}
+            {/*Central Animated Logo */}
             <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -43,7 +43,7 @@ const ChatWelcomeScreen = () => {
                 </motion.div>
             </motion.div>
 
-            {/* 3. Text & Branding: Tối giản tối đa */}
+            {/* Text & Branding: Tối giản tối đa */}
             <div className="mt-12 text-center z-10">
                 <motion.h1
                     initial={{ opacity: 0, y: 10 }}
@@ -71,7 +71,7 @@ const ChatWelcomeScreen = () => {
                 </motion.p>
             </div>
 
-            {/* 4. Tín hiệu quét (Scanning line) - Tăng chất "Security" */}
+            {/* Tín hiệu quét (Scanning line) */}
             <motion.div
                 animate={{ top: ["0%", "100%", "0%"] }}
                 transition={{ duration: 10, repeat: Infinity, ease: "linear" }}

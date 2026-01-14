@@ -1,7 +1,9 @@
+
 import type React from "react";
 import { Card } from "../ui/card";
 import { cn, formatOnlineTime } from "@/lib/utils";
 import { MoreHorizontal } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface ChatCardProps {
     convoId: string;
@@ -13,48 +15,74 @@ interface ChatCardProps {
     subtitle: React.ReactNode;
 }
 
-
-
 const ChatCard = ({
     convoId, name, timestamp, isActive, onSelect, leftSection, subtitle
 }: ChatCardProps) => {
     return (
-        <Card
-            key={convoId}
-            className={
-                cn(
-                    "border-none p-3 cursor-pointer transition-smooth glass hover:bg-muted/30",
-                    isActive &&
-                    "ring-2 ring-primary/50 bg-gradient-to-tr from-primary-glow/10 to-primary-foreground"
-                )}
-            onClick={() => onSelect(convoId)}
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
         >
-            <div className="flex items-center gap-3">
-                <div className="relative">{leftSection}</div>
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                        <h3 className="font-semibold text-sm truncate"
-                        >
-                            {name}
-                        </h3>
-                        <MoreHorizontal
-                            className="size-4 text-muted-foreground opacity-0 group-hover:opacity-100
-                            hover:size-5 transition-smooth"
-                        />
-
+            <Card
+                className={cn(
+                    // Base styles: Tối giản, không viền cứng
+                    "relative group border-none p-3 mb-1 cursor-pointer transition-all duration-300",
+                    "bg-transparent hover:bg-muted/40",
+                    // Active state: Hiệu ứng nổi bật nhưng tinh tế
+                    isActive && [
+                        "bg-primary/10 shadow-sm",
+                        "before:absolute before:left-0 before:top-1/4 before:bottom-1/4 before:w-1 before:bg-primary before:rounded-r-full"
+                    ]
+                )}
+                onClick={() => onSelect(convoId)}
+            >
+                <div className="flex items-center gap-3">
+                    {/* Avatar section với indicator trạng thái */}
+                    <div className="relative shrink-0">
+                        {leftSection}
                     </div>
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1 flex-1 min-w-0">{subtitle}</div>
 
-                        <span className="text-xs text-muted-foreground"
-                        >{timestamp ? formatOnlineTime(timestamp) : null}</span>
+                    {/* Content section */}
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2 mb-0.5">
+                            <h3 className={cn(
+                                "font-semibold text-sm truncate transition-colors",
+                                isActive ? "text-primary" : "text-foreground/90"
+                            )}>
+                                {name}
+                            </h3>
+
+                            <div className="flex items-center gap-2">
+                                {timestamp && (
+                                    <span className="text-[10px] font-medium text-muted-foreground whitespace-nowrap">
+                                        {formatOnlineTime(timestamp)}
+                                    </span>
+                                )}
+
+                                {/* Nút More chỉ hiện khi hover hoặc active */}
+                                <button className="p-1 rounded-md hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <MoreHorizontal className="size-3.5 text-muted-foreground" />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Tin nhắn cuối cùng (Subtitle) */}
+                        <div className="flex items-center justify-between">
+                            <div className={cn(
+                                "text-[12.5px] truncate flex-1 pr-4",
+                                isActive ? "text-foreground/80 font-medium" : "text-muted-foreground"
+                            )}>
+                                {subtitle}
+                            </div>
+
+                        </div>
                     </div>
                 </div>
-            </div>
+            </Card>
+        </motion.div>
+    );
+};
 
-
-        </Card>
-    )
-}
-
-export default ChatCard
+export default ChatCard;
