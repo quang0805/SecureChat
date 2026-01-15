@@ -20,6 +20,7 @@ export interface AuthState {
     logOut: () => void;
     fetchMe: () => Promise<void>
     updateDisplayName: (newName: string) => Promise<void>
+    updateAvatar: (url: string) => Promise<void>
 }
 
 

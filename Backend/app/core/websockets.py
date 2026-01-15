@@ -42,6 +42,7 @@ class ConnectionManager:
                             await connection.send_text(message_json)
                         except Exception as e:
                             print(f"Could not send message to user {user_id}: {e}")
+                            await self.disconnect(connection, user_id)
 
     # Thông báo cho toàn hệ thống biết một user vừa online/offline. 
     async def broadcast_status_change(self, user_id: uuid.UUID, status: str):

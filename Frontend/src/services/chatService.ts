@@ -45,7 +45,7 @@ export const chatService = {
 
     async searchUsers(query: string) {
         if (!query.trim()) return [];
-        const res = await api.get(`/users/search?q=${query}`); // Endpoint backend
+        const res = await api.get(`/users/search?q=${query}`);
         return res.data;
     },
 

@@ -9,7 +9,7 @@ const WebSocketManager = () => {
     const { accessToken } = useAuthStore();
     const { handleIncomingMessage, handleUserStatusChange, handleIncomingNewConversation } = useChatStore();
 
-    const socketUrl = accessToken ? `wss://192.168.111.113:8000/ws/${accessToken}` : null;
+    const socketUrl = accessToken ? `ws://localhost:8000/ws/${accessToken}` : null;
 
     const { lastMessage } = useWebSocket(socketUrl, {
         // Tự động kết nối lại

@@ -1,5 +1,6 @@
 // authService.ts
 import api from "@/lib/axios";
+import axios from "axios";
 export const authService = {
     signUp: async (
         username: string,
@@ -45,5 +46,25 @@ export const authService = {
     updateDisplayName: async (newName: string) => {
         const res = await api.patch(`/users/me?display_name=${newName}`);
         return res.data;
-    }
+    },
+    uploadToCloudinary: async (file: File) => {
+        const cloudName = "detmos3za";
+        const uploadPreset = "secure_chat";
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", uploadPreset);
+        // Gửi ảnh avatar lên cloud dinary.
+        const res = await axios.post(
+            `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+            formData
+        );
+        return res.data.secure_url;
+    },
+    updateAvatarUrl: async (url: string) => {
+        // Gửi Link ảnh về Backend.
+        const res = await api.patch(`/users/me/avatar`, { avatar_url: url });
+        return res.data;
+    },
+
 }

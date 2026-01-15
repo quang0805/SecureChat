@@ -23,4 +23,4 @@ async def websocket_endpoint(
         await manager.disconnect(websocket, user.id, user.username)
     except Exception as e:
         print(f"Error in websocket for user {user.id}: {e}")
-        manager.disconnect(websocket, user.id)
+        manager.disconnect(websocket, user.id, user.username)

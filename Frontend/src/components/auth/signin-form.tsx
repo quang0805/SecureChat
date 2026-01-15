@@ -8,7 +8,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useNavigate } from "react-router"
 import { useAuthStore } from "@/stores/useAuthStore"
-
+import { motion } from "framer-motion";
+import Lottie from "lottie-react";
+import loginAnimation from "@/assets/animations/Login.json";
 
 const signInSchema = z.object({
     username: z.string().min(3, "Tên đăng nhập phải có ít nhất 3 kí tự"),
@@ -41,12 +43,12 @@ export function SignInForm({
     }
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
-            <Card className="overflow-hidden p-0 border-border">
+            <Card className="overflow-hidden p-0 border-border ">
                 <CardContent className="grid p-0 md:grid-cols-2">
                     <form className="p-6 md:p-8" onSubmit={handleSubmit(onSubmit)}>
                         <div className="flex flex-col gap-6">
                             {/** header - logo*/}
-                            <div className="flex flex-col items-center text-center gap-2">
+                            <div className="flex flex-col items-center text-center gap-2 ">
                                 <a href="/" className="mx-auto block w-1/4 h-1/4 text-center">
                                     <img src="/logo_securechat.svg" alt="logo" />
                                 </a>
@@ -117,13 +119,51 @@ export function SignInForm({
 
                         </div>
                     </form>
-                    <div className="bg-muted relative hidden md:block">
-                        <img
-                            src="/signin.svg"
-                            alt="Image"
-                            className="absolute top-1/2 -translate-y-1/2 object-cover"
-                        />
+
+                    <div className="bg-muted relative hidden md:block overflow-hidden border-l border-border/50">
+                        {/* Lớp nền Gradient mờ tạo chiều sâu */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-primary/5" />
+
+                        {/* Các vòng tròn ánh sáng trang trí (Glow effect) */}
+                        <div className="absolute top-1/4 -right-20 size-80 bg-primary/20 rounded-full blur-[100px] animate-pulse" />
+                        <div className="absolute bottom-1/4 -left-20 size-80 bg-purple-500/10 rounded-full blur-[100px]" />
+
+                        {/* CONTAINER LOTTIE */}
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                            className="absolute inset-0 flex items-center justify-center p-12"
+                        >
+                            <div className="relative w-full max-w-[450px]">
+                                <Lottie
+                                    animationData={loginAnimation}
+                                    loop={true}
+                                    style={{ width: '100%', height: '100%' }}
+                                />
+
+                                {/* Chú thích nhỏ tinh tế phía dưới animation */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 0.6, y: 0 }}
+                                    transition={{ delay: 0.8 }}
+                                    className="text-center mt-4"
+                                >
+                                    <p className="text-xs font-medium tracking-[0.2em] uppercase text-muted-foreground">
+                                        End-to-End Encrypted System
+                                    </p>
+                                </motion.div>
+                            </div>
+                        </motion.div>
+
+                        {/* Hiệu ứng Scanning Line (Đồng bộ với Welcome Screen) */}
+                        {/* <motion.div
+                            animate={{ top: ["0%", "100%", "0%"] }}
+                            transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+                            className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent z-10"
+                        /> */}
                     </div>
+
                 </CardContent>
             </Card>
         </div>

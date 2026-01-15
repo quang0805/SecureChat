@@ -210,6 +210,20 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='%239C92AC' fill-opacity='0.1'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' /%3E%3C/g%3E%3C/svg%3E");
   }
 
+  .bg-chat-fortress {
+    /* LIGHT MODE - Midnight Blue Base */
+    background-color: #d7e2e9;
+    /* Pattern: Shield & Interconnected Nodes */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='%234a6b8a' fill-opacity='0.18'%3E%3Cpath d='M30 5c-4 0-8 2-8 6v4c0 4.4 3.6 8 8 8s8-3.6 8-8v-4c0-4-4-6-8-6zm-2 24c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2v-4c0-1.1-.9-2-2-2h-4zm-26 2c-4 0-8 2-8 6v4c0 4.4 3.6 8 8 8s8-3.6 8-8v-4c0-4-4-6-8-6zm56 0c-4 0-8 2-8 6v4c0 4.4 3.6 8 8 8s8-3.6 8-8v-4c0-4-4-6-8-6zM30 40c-4 0-8 2-8 6v4c0 4.4 3.6 8 8 8s8-3.6 8-8v-4c0-4-4-6-8-6z'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .dark .bg-chat-fortress {
+    /* DARK MODE - Deep Midnight */
+    background-color: #0f171e;
+    /* Pattern rõ hơn một chút để tạo vẻ nguy hiểm */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M30 5c-4 0-8 2-8 6v4c0 4.4 3.6 8 8 8s8-3.6 8-8v-4c0-4-4-6-8-6zm-2 24c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2v-4c0-1.1-.9-2-2-2h-4zm-26 2c-4 0-8 2-8 6v4c0 4.4 3.6 8 8 8s8-3.6 8-8v-4c0-4-4-6-8-6zm56 0c-4 0-8 2-8 6v4c0 4.4 3.6 8 8 8s8-3.6 8-8v-4c0-4-4-6-8-6zM30 40c-4 0-8 2-8 6v4c0 4.4 3.6 8 8 8s8-3.6 8-8v-4c0-4-4-6-8-6z'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
   .dark .bg-chat-pattern {
     background-color: #0b141a;
     /* Màu tối đặc trưng của Telegram/WhatsApp Dark */

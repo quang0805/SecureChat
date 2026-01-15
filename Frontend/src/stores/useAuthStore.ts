@@ -73,8 +73,6 @@ export const useAuthStore = create<AuthState>()(
                     }
 
                     useChatStore.getState().fetchConversation();
-                    toast.success("Đăng nhập và khôi phục khóa thành công!");
-
                     toast.success("Đăng nhập thành công!")
                 } catch (error) {
                     console.error(error);
@@ -107,10 +105,21 @@ export const useAuthStore = create<AuthState>()(
                     set({ loading: true });
                     const user = await authService.updateDisplayName(newName);
                     set({ user });
-                    toast.success("Cập nhật Diplayname thành công!");
                 } catch (error) {
                     console.error(error);
                     toast.error("Không thể cập nhật tên!");
+                } finally {
+                    set({ loading: false });
+                }
+            },
+            updateAvatar: async (url: string) => {
+                try {
+                    set({ loading: true });
+                    const user = await authService.updateAvatarUrl(url);
+                    set({ user });
+                } catch (error) {
+                    console.log(error);
+                    toast.error("Không thể cập nhật avatar!");
                 } finally {
                     set({ loading: false });
                 }

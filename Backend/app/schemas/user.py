@@ -20,3 +20,4 @@ class User(UserBase):
     encrypted_private_key: Optional[str] = None
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
+
