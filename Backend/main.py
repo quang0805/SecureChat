@@ -3,6 +3,7 @@ from app.core.config import settings
 from app.api.api import api_router, ws_router
 from app.core.database import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
+import os
 
 
 # Tạo các bảng trong database dựa trên models
@@ -20,7 +21,8 @@ origins = [
     "http://localhost:8000",
     "https://localhost:8000",
     "https://192.168.111.113:5173",
-    "http://localhost"
+    "http://localhost",
+    os.getenv("FRONTEND_URL", "*") 
 ]
 app.add_middleware(
     CORSMiddleware,
