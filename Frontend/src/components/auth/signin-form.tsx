@@ -11,6 +11,7 @@ import { useAuthStore } from "@/stores/useAuthStore"
 import { motion } from "framer-motion";
 import Lottie from "lottie-react";
 import loginAnimation from "@/assets/animations/Login.json";
+import logoAnimation from "@/assets/animations/Telegram.json";
 
 const signInSchema = z.object({
     username: z.string().min(3, "Tên đăng nhập phải có ít nhất 3 kí tự"),
@@ -38,7 +39,6 @@ export function SignInForm({
             await signIn(username, password)
             navigate("/")
         } catch (error) {
-            // console.error(error.response.data.detail)
         }
     }
     return (
@@ -49,9 +49,12 @@ export function SignInForm({
                         <div className="flex flex-col gap-6">
                             {/** header - logo*/}
                             <div className="flex flex-col items-center text-center gap-2 ">
-                                <a href="/" className="mx-auto block w-1/4 h-1/4 text-center">
-                                    <img src="/logo_securechat.svg" alt="logo" />
-                                </a>
+                                <Lottie
+                                    animationData={logoAnimation}
+                                    loop={true}     // Lặp lại
+                                    autoplay={true} // Tự động chạy khi load trang
+                                    className="w-1/4 h-auto"
+                                />
                                 <h1 className="text-2xl font-bold"
                                 >
                                     Đăng nhập
@@ -120,14 +123,7 @@ export function SignInForm({
                         </div>
                     </form>
 
-                    <div className="bg-muted relative hidden md:block overflow-hidden border-l border-border/50">
-                        {/* Lớp nền Gradient mờ tạo chiều sâu */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-primary/5" />
-
-                        {/* Các vòng tròn ánh sáng trang trí (Glow effect) */}
-                        <div className="absolute top-1/4 -right-20 size-80 bg-primary/20 rounded-full blur-[100px] animate-pulse" />
-                        <div className="absolute bottom-1/4 -left-20 size-80 bg-purple-500/10 rounded-full blur-[100px]" />
-
+                    <div className="relative hidden md:block overflow-hidden border-l border-border/50">
                         {/* CONTAINER LOTTIE */}
                         <motion.div
                             initial={{ opacity: 0, scale: 0.8 }}
@@ -156,12 +152,6 @@ export function SignInForm({
                             </div>
                         </motion.div>
 
-                        {/* Hiệu ứng Scanning Line (Đồng bộ với Welcome Screen) */}
-                        {/* <motion.div
-                            animate={{ top: ["0%", "100%", "0%"] }}
-                            transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-                            className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent z-10"
-                        /> */}
                     </div>
 
                 </CardContent>

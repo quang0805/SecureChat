@@ -20,8 +20,6 @@ origins = [
     "http://localhost:5173",
     "http://localhost:8000",
     "https://localhost:8000",
-    "https://192.168.111.113:5173",
-    "http://localhost",
     os.getenv("FRONTEND_URL", "*") 
 ]
 app.add_middleware(

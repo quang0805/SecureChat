@@ -5,7 +5,7 @@ export function IsometricGrid() {
     // Bảng màu mới: Chuyển từ Tím đậm sang Hồng Neon để khớp với thương hiệu SecureChat
     const waves = [
         {
-            color: 'fill-primary', // Màu tím thương hiệu của bạn
+            color: 'fill-primary',
             opacity: 0.15,
             y: 0,
             duration: 18,
@@ -40,7 +40,7 @@ export function IsometricGrid() {
 
     return (
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-            {/* 1. Base Gradient Background: Sử dụng tông màu tối sâu (Midnight) bạn đã định nghĩa */}
+            {/* 1. Base Gradient Background: Sử dụng tông màu tối sâu (Midnight)*/}
             <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-primary/20 dark:from-background dark:via-[#0b0b0e] dark:to-primary/10" />
 
             {/* 2. Animated Wave Layers */}

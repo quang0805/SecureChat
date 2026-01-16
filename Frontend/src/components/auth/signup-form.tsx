@@ -8,6 +8,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useAuthStore } from "@/stores/useAuthStore"
 import { useNavigate } from "react-router"
+import Lottie from "lottie-react"
+import { motion } from "framer-motion"
+import loginAnimation from "@/assets/animations/Login.json";
+import logoAnimation from "@/assets/animations/Telegram.json";
 
 
 const signUpSchema = z.object({
@@ -50,9 +54,12 @@ export function SignupForm({
             <div className="flex flex-col gap-6">
               {/** header - logo*/}
               <div className="flex flex-col items-center text-center gap-2">
-                <a href="/" className="mx-auto block w-1/4 h-1/4 text-center">
-                  <img src="/logo_securechat.svg" alt="logo" />
-                </a>
+                <Lottie
+                  animationData={logoAnimation}
+                  loop={true}     // Lặp lại
+                  autoplay={true} // Tự động chạy khi load trang
+                  className="w-1/4 h-auto"
+                />
                 <h1 className="text-2xl font-bold"
                 >
                   Tạo tài khoản
@@ -160,12 +167,36 @@ export function SignupForm({
 
             </div>
           </form>
-          <div className="bg-muted relative hidden md:block">
-            <img
-              src="/signup.svg"
-              alt="Image"
-              className="absolute top-1/2 -translate-y-1/2 object-cover"
-            />
+          <div className="relative hidden md:block overflow-hidden border-l border-border/50">
+
+            {/* CONTAINER LOTTIE */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="absolute inset-0 flex items-center justify-center p-12"
+            >
+              <div className="relative w-full max-w-[450px]">
+                <Lottie
+                  animationData={loginAnimation}
+                  loop={true}
+                  style={{ width: '100%', height: '100%' }}
+                />
+
+                {/* Chú thích nhỏ tinh tế phía dưới animation */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 0.6, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="text-center mt-4"
+                >
+                  <p className="text-xs font-medium tracking-[0.2em] uppercase text-muted-foreground">
+                    End-to-End Encrypted System
+                  </p>
+                </motion.div>
+              </div>
+            </motion.div>
+
           </div>
         </CardContent>
       </Card>

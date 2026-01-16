@@ -5,7 +5,7 @@ const ChatWelcomeScreen = () => {
     return (
         <div className="bg-background w-full h-full rounded-2xl flex flex-col justify-center items-center relative overflow-hidden border border-border/40 shadow-2xl">
 
-            {/* 1. Background Decor: Các vòng tròn mờ tạo chiều sâu */}
+            {/* Background Decor: Các vòng tròn mờ tạo chiều sâu */}
             <div className="absolute inset-0 pointer-events-none">
                 <motion.div
                     animate={{ scale: [1, 1.2, 1], opacity: [0.05, 0.1, 0.05] }}
