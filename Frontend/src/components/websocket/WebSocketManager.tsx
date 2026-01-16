@@ -9,7 +9,9 @@ const WebSocketManager = () => {
     const { accessToken } = useAuthStore();
     const { handleIncomingMessage, handleUserStatusChange, handleIncomingNewConversation } = useChatStore();
 
-    const socketUrl = accessToken ? `ws://localhost:8000/ws/${accessToken}` : null;
+    const socketUrl = accessToken
+        ? `${import.meta.env.VITE_WS_URL}/ws/${accessToken}`
+        : null;
 
     const { lastMessage } = useWebSocket(socketUrl, {
         // Tự động kết nối lại
