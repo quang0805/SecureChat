@@ -84,7 +84,6 @@ const MessageItem = ({ message, index, messages, selectedConvo }: MessageItemPro
                                     alt="Full size"
                                     // Click vào ảnh to để đóng (nếu muốn)
                                     onClick={(e) => {
-                                        // Bạn có thể thêm logic đóng dialog ở đây nếu component cho phép
 
                                     }}
                                 />
