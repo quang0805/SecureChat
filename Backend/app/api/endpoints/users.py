@@ -7,6 +7,7 @@ from app.schemas import user as user_schema
 from app.services import user_service
 from app.models import User
 from app.core.websockets import manager
+from typing import List
 
 router = APIRouter()
 
@@ -34,11 +35,13 @@ def update_displayname(
     db.refresh(current_user)
     return current_user
  
-
-@router.get("/search")
-def search_users(q: str, db: Session = Depends(get_db)):
-    return db.query(User).filter(User.username.ilike(f"%{q}%")).limit(5).all()
-
+@router.get("/search", response_model=List[user_schema.User])
+def search_users(q: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+   # Tìm kiếm user và trả về đầy đủ thông tin identity_key_pub (FastAPI sẽ lọc qua Schema User)
+   return db.query(User).filter(
+       User.username.ilike(f"%{q}%"),
+       User.id != current_user.id
+   ).limit(10).all()
 
 class AvatarUpdate(BaseModel):
     avatar_url: str

@@ -19,8 +19,8 @@ app.include_router(ws_router)
 origins = [
     "http://localhost:5173",
     "http://localhost:8000",
-    "https://localhost:8000",
-    os.getenv("FRONTEND_URL", "*") 
+    "https://localhost:8000"
+    # os.getenv("FRONTEND_URL", "*") 
 ]
 app.add_middleware(
     CORSMiddleware,

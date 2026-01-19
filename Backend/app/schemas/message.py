@@ -6,19 +6,21 @@ from typing import Optional
 from .user import User
 
 class MessageBase(BaseModel):
-    content: str                             # Chứa Ciphertext (chuỗi đã mã hóa)
-    content_type: str = "text"
-    encrypted_aes_key: Optional[str] = None  # Bản mã khóa AÉS tin nhắn bằng RSA Public Key của người nhận.
-    encrypted_aes_key_sender: Optional[str] = None  # Bản mã khóa AES tin nhắn bằng RSA Public Key của người nhận.
-    iv: Optional[str] = None                 # IV `AES-GCM
+   content: str          # Chứa Ciphertext (văn bản mã hóa) hoặc URL Cloudinary
+   content_type: str = "text"
+   iv: Optional[str] = None 
+   
+   # Trong Double Ratchet, chúng ta dùng signature để lưu Header JSON:
+   # { "pubKey": "...", "count": n, "prevCount": pn, "iv": "..." }
+   signature: Optional[str] = None 
 
 class MessageCreate(MessageBase):
-    model_config = ConfigDict(from_attributes=True)
+   model_config = ConfigDict(from_attributes=True)
 
 class Message(MessageBase):
-    id: int
-    sender_id: uuid.UUID
-    conversation_id: uuid.UUID
-    created_at: datetime
-    sender: User
-    model_config = ConfigDict(from_attributes=True)
+   id: int
+   sender_id: uuid.UUID
+   conversation_id: uuid.UUID
+   created_at: datetime
+   sender: User # Đảm bảo schema User này có identity_key_pub
+   model_config = ConfigDict(from_attributes=True)

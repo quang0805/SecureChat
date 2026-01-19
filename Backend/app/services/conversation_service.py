@@ -54,10 +54,9 @@ async def create_conversation(db: Session, conversation_data: ConversationCreate
         db.add(db_participant)
     db.commit()
 
-    # Broadcast cho cách thành viên khi khởi tạo => websocket.
+     # 1. Sau khi commit thành công, lấy đầy đủ thông tin để Broadcast
     full_participants = db.query(User).filter(User.id.in_(participant_ids)).all()
     
-    # Tạo payload cho websocket message.
     convo_payload = {
         "id": str(db_conversation.id),
         "type": db_conversation.type,
@@ -70,21 +69,18 @@ async def create_conversation(db: Session, conversation_data: ConversationCreate
                 "username": u.username,
                 "display_name": u.display_name,
                 "avatar_url": u.avatar_url,
-                "public_key": u.public_key # Người gửi sẽ có các khóa giải mã của participant ngay.
+                "identity_key_pub": u.identity_key_pub 
             } for u in full_participants
         ],
-        "last_message": None # Cuộc hội thoại mới chưa có tin nhắn
+        "last_message": None
     }
 
-    # message gửi qua websocket.
-    ws_message = {
-        "type" : "new_conversation",
-        "payload" : convo_payload
-    }
-    print(f">>> TEST BROADCAST")
+    # 2. Gửi qua WebSocket cho cả 2 bên
+    await manager.broadcast({
+        "type": "new_conversation",
+        "payload": convo_payload
+    }, participant_ids)
 
-    # Broadcast cho các thành viên trong hội thoại.
-    await manager.broadcast(ws_message, participant_ids)
     return db_conversation
 
 
