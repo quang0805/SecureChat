@@ -1,117 +1,27 @@
-const ALGO_RSA = "RSA-OAEP";
-const ALGO_AES = "AES-GCM";
+// src/lib/cryptoUtils.ts
+
+// --- HELPERS: Chuyển đổi an toàn cho dữ liệu lớn (như ảnh hoặc Ratchet State) ---
+export const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+    }
+    return window.btoa(binary);
+};
+
+export const base64ToArrayBuffer = (base64: string): ArrayBuffer => {
+    const binary = window.atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+    }
+    return bytes.buffer;
+};
 
 export const cryptoUtils = {
-    // 1. Tạo cặp khóa RSA
-    generateKeyPair: async () => {
-        return await window.crypto.subtle.generateKey(
-            {
-                name: "RSA-OAEP",
-                modulusLength: 2048,
-                publicExponent: new Uint8Array([1, 0, 1]),
-                hash: "SHA-256",
-            },
-            true,
-            ["encrypt", "decrypt"]
-        );
-    },
-
-    // 2. Xuất khóa sang định dạng chuỗi để lưu DB
-    exportKey: async (key: CryptoKey) => {
-        const exported = await window.crypto.subtle.exportKey(
-            key.type === "public" ? "spki" : "pkcs8",
-            key
-        );
-        return arrayBufferToBase64(exported);
-    },
-
-    // 3. Nhập khóa từ chuỗi
-    importKey: async (keyStr: string, type: "public" | "private") => {
-        const binaryDer = Uint8Array.from(atob(keyStr), c => c.charCodeAt(0));
-        return await window.crypto.subtle.importKey(
-            type === "public" ? "spki" : "pkcs8",
-            binaryDer,
-            { name: "RSA-OAEP", hash: "SHA-256" },
-            true,
-            type === "public" ? ["encrypt"] : ["decrypt"]
-        );
-    },
-
-    // 4. Mã hóa tin nhắn (Hybrid Encryption)
-    encryptMessage: async (plaintext: string, recipientPublicKeyStr: string) => {
-        // Tạo khóa AES mã hóa tin nhắn.
-        const aesKey = await window.crypto.subtle.generateKey(
-            { name: ALGO_AES, length: 256 },
-            true,
-            ["encrypt", "decrypt"]
-        );
-
-        // Mã hóa nội dung bằng AES-GCM
-        const iv = window.crypto.getRandomValues(new Uint8Array(12));
-        const encodedText = new TextEncoder().encode(plaintext);
-        const encryptedContent = await window.crypto.subtle.encrypt(
-            { name: ALGO_AES, iv },
-            aesKey,
-            encodedText
-        );
-
-        // Xuất AES ra dạng Raw
-        const aesKeyRaw = await window.crypto.subtle.exportKey("raw", aesKey);
-
-
-        // Mã hóa khóa AES bằng RSA Public Key của người nhận
-        const recipientPubKey = await cryptoUtils.importKey(recipientPublicKeyStr, "public");
-        const exportedAesKey = await window.crypto.subtle.exportKey("raw", aesKey);
-        const encryptedAesKey = await window.crypto.subtle.encrypt(
-            { name: "RSA-OAEP" },
-            recipientPubKey,
-            exportedAesKey
-        );
-
-        return {
-            ciphertext: arrayBufferToBase64(encryptedContent),
-            encryptedAesKey: arrayBufferToBase64(encryptedAesKey),
-            iv: arrayBufferToBase64(iv.buffer),
-            aesKeyRaw: aesKeyRaw
-        };
-    },
-    // HELPER - mã hóa khóa AES bằng public key của mình. 
-    encryptAesKeyForMe: async (aesKeyRaw: ArrayBuffer, myPublicKeyStr: string) => {
-        const myPubKey = await cryptoUtils.importKey(myPublicKeyStr, "public");
-        const encrypted = await window.crypto.subtle.encrypt(
-            { name: "RSA-OAEP" }, myPubKey, aesKeyRaw
-        );
-        return arrayBufferToBase64(encrypted);
-    },
-    // 5. Giải mã tin nhắn
-    decryptMessage: async (ciphertext: string, encryptedAesKey: string, iv: string, myPrivateKey: CryptoKey) => {
-        // Giải mã khóa AES bằng RSA Private Key của mình
-        const encryptedAesKeyBin = Uint8Array.from(atob(encryptedAesKey), c => c.charCodeAt(0));
-        const aesKeyRaw = await window.crypto.subtle.decrypt(
-            { name: "RSA-OAEP" },
-            myPrivateKey,
-            encryptedAesKeyBin
-        );
-
-        const aesKey = await window.crypto.subtle.importKey(
-            "raw", aesKeyRaw, { name: ALGO_AES }, true, ["decrypt"]
-        );
-
-        // Giải mã nội dung bằng AES
-        const ciphertextBin = Uint8Array.from(atob(ciphertext), c => c.charCodeAt(0));
-        const ivBin = Uint8Array.from(atob(iv), c => c.charCodeAt(0));
-
-        const decrypted = await window.crypto.subtle.decrypt(
-            { name: ALGO_AES, iv: ivBin },
-            aesKey,
-            ciphertextBin
-        );
-
-        return new TextDecoder().decode(decrypted);
-    },
-
-    // 6. Hàm tạo Master Key từ mật khẩu (PBKDF2)
-    deriveMasterKey: async (password: string, salt: string) => {
+    // 1. Hàm tạo Master Key từ mật khẩu (PBKDF2)
+    deriveMasterKey: async (password: string, salt: string): Promise<CryptoKey> => {
         const encoder = new TextEncoder();
         const passwordKey = await window.crypto.subtle.importKey(
             "raw",
@@ -124,7 +34,7 @@ export const cryptoUtils = {
         return await window.crypto.subtle.deriveKey(
             {
                 name: "PBKDF2",
-                salt: encoder.encode(salt), // Dùng username làm salt
+                salt: encoder.encode(salt),
                 iterations: 100000,
                 hash: "SHA-256",
             },
@@ -135,7 +45,7 @@ export const cryptoUtils = {
         );
     },
 
-    // 7. Wrap Private Key (Mã hóa Private Key bằng Master Key)
+    // 2. Wrap Identity Private Key (Dùng Master Key mã hóa khóa ECDH)
     wrapPrivateKey: async (privateKey: CryptoKey, masterKey: CryptoKey) => {
         const exportedPrivKey = await window.crypto.subtle.exportKey("pkcs8", privateKey);
         const iv = window.crypto.getRandomValues(new Uint8Array(12));
@@ -145,20 +55,19 @@ export const cryptoUtils = {
             exportedPrivKey
         );
 
-        // Trả về chuỗi gồm IV + Ciphertext để lưu lên DB
         return {
             wrappedKey: arrayBufferToBase64(encryptedPrivKey),
             iv: arrayBufferToBase64(iv.buffer)
         };
     },
 
-    // 8. Unwrap Private Key (Giải mã lấy lại Private Key)
-    unwrapPrivateKey: async (wrappedKeyStr: string, ivStr: string, masterKey: CryptoKey) => {
-        const encryptedPrivKey = Uint8Array.from(atob(wrappedKeyStr), c => c.charCodeAt(0));
-        const iv = Uint8Array.from(atob(ivStr), c => c.charCodeAt(0));
+    // 3. Unwrap Identity Private Key (Giải mã lấy lại khóa ECDH P-384)
+    unwrapPrivateKey: async (wrappedKeyStr: string, ivStr: string, masterKey: CryptoKey): Promise<CryptoKey> => {
+        const encryptedPrivKey = base64ToArrayBuffer(wrappedKeyStr);
+        const iv = base64ToArrayBuffer(ivStr);
 
         const decryptedPrivKey = await window.crypto.subtle.decrypt(
-            { name: "AES-GCM", iv },
+            { name: "AES-GCM", iv: new Uint8Array(iv) },
             masterKey,
             encryptedPrivKey
         );
@@ -166,19 +75,37 @@ export const cryptoUtils = {
         return await window.crypto.subtle.importKey(
             "pkcs8",
             decryptedPrivKey,
-            { name: "RSA-OAEP", hash: "SHA-256" },
+            { name: "ECDH", namedCurve: "P-384" }, // PHẢI khớp với drLib.generateEG
             true,
-            ["decrypt"]
+            ["deriveKey", "deriveBits"]
         );
     },
+    // 9. Mã hóa dữ liệu bất kỳ (dùng cho Ratchet State)
+    encryptData: async (data: ArrayBuffer, masterKey: CryptoKey) => {
+        const iv = window.crypto.getRandomValues(new Uint8Array(12));
+        const encrypted = await window.crypto.subtle.encrypt(
+            { name: "AES-GCM", iv },
+            masterKey,
+            data
+        );
 
-};
-// Hàm chuyển đổi ArrayBuffer sang Base64 một cách an toàn cho dữ liệu lớn
-const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
-    const bytes = new Uint8Array(buffer);
-    let binary = '';
-    for (let i = 0; i < bytes.byteLength; i++) {
-        binary += String.fromCharCode(bytes[i]);
+        return {
+            ciphertext: arrayBufferToBase64(encrypted),
+            iv: arrayBufferToBase64(iv.buffer)
+        };
+    },
+
+    // 10. Giải mã dữ liệu bất kỳ
+    decryptData: async (ciphertextStr: string, ivStr: string, masterKey: CryptoKey) => {
+        const ciphertext = base64ToArrayBuffer(ciphertextStr);
+        const iv = base64ToArrayBuffer(ivStr);
+
+        const decrypted = await window.crypto.subtle.decrypt(
+            { name: "AES-GCM", iv: new Uint8Array(iv) },
+            masterKey,
+            ciphertext
+        );
+
+        return decrypted; // Trả về ArrayBuffer
     }
-    return window.btoa(binary);
 };

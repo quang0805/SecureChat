@@ -31,7 +31,7 @@ const WebSocketManager = () => {
                 const data = JSON.parse(lastMessage.data);
 
                 if (data.type === 'new_message' && data.payload) {
-                    handleIncomingMessage(data.payload);
+                    handleIncomingMessage(data.payload).catch(console.error);
                 } else if (data.type === "user_status_change" && data.payload) {
                     const { user_id, status } = data.payload;
                     handleUserStatusChange(user_id, status);

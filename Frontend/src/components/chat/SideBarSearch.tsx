@@ -27,6 +27,12 @@ export function SidebarSearch() {
         return () => clearTimeout(delayDebounce)
     }, [query, searchUsers])
 
+    const handleUserClick = async (user: User) => {
+        await startConversation(user); // Tự động tạo phòng + Handshake DH
+        setQuery("");
+        setResults([]);
+    };
+
     return (
         <div className="px-4 py-3 relative z-50">
             {/* Input Group */}
@@ -90,15 +96,12 @@ export function SidebarSearch() {
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: index * 0.05 }}
-                                        onClick={() => {
-                                            startConversation(user)
-                                            setQuery("")
-                                        }}
+                                        onClick={() => { handleUserClick(user) }}
                                         className="flex items-center gap-3 p-3 hover:bg-primary/10 cursor-pointer transition-all active:scale-95 group"
                                     >
                                         <div className="relative">
                                             <Avatar className="h-9 w-9 border border-border/50 shadow-sm">
-                                                <AvatarImage src={user.avatar_url} />
+                                                <AvatarImage src={user.avatar_url ?? ""} />
                                                 <AvatarFallback className="bg-primary/20 text-primary font-bold">
                                                     {user.display_name?.charAt(0).toUpperCase()}
                                                 </AvatarFallback>
